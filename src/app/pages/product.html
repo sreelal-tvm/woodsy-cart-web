@@ -1,0 +1,222 @@
+@if (p(); as p) {
+  <div class="container-xxl py-4">
+    <nav class="fs-7 mb-3 text-truncate"><a routerLink="/">Home</a> <i class="bi bi-chevron-right text-quiet mx-1"></i>
+      <a routerLink="/shop" [queryParams]="{ category: p.category.slug }">{{ p.category.name }}</a> <i class="bi bi-chevron-right text-quiet mx-1"></i>
+      <span class="text-muted">{{ p.name }}</span></nav>
+
+    <div class="row g-4 g-xl-5">
+      <!-- Gallery -->
+      <div class="col-lg-6">
+        <div class="position-sticky" style="top: 7rem">
+          @if (images()[imageIndex()]; as img) {
+            <div class="main-img mb-2">
+              @if (img.mediaType === 3 && youTubeEmbed(img.url); as embed) {
+                <iframe [src]="embed" class="w-100 h-100 border-0" title="Product video" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              } @else if (img.mediaType === 3) { <video [src]="img.url | media" controls playsinline [poster]="img.thumbnailUrl | media"></video> }
+              @else { <img [src]="img.url | media" [alt]="img.altText || p.name" /> }
+              @if (images().length > 1) {
+                <button class="nav-arrow" style="left: 0.75rem" (click)="step(-1)" aria-label="Previous image"><i class="bi bi-chevron-left"></i></button>
+                <button class="nav-arrow" style="right: 0.75rem" (click)="step(1)" aria-label="Next image"><i class="bi bi-chevron-right"></i></button>
+              }
+              <button class="btn btn-light btn-icon rounded-circle position-absolute" style="top: 0.75rem; right: 0.75rem" (click)="wishlist.toggle(p.id)" aria-label="Wishlist">
+                <i class="bi" [class.bi-heart-fill]="wishlist.has(p.id)" [class.text-danger]="wishlist.has(p.id)" [class.bi-heart]="!wishlist.has(p.id)"></i>
+              </button>
+            </div>
+          }
+          <div class="thumbs">
+            @for (img of images(); track img.id; let i = $index) {
+              <button [class.on]="i === imageIndex()" (click)="imageIndex.set(i)" [attr.aria-label]="'Image ' + (i + 1)">
+                <img [src]="(img.thumbnailUrl || img.url) | media" alt="" loading="lazy" />
+                @if (img.mediaType === 3) { <i class="bi bi-play-circle-fill position-absolute top-50 start-50 translate-middle text-white fs-4"></i> }
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Buy box -->
+      <div class="col-lg-6">
+        <div class="d-flex flex-wrap gap-1 mb-2">@for (t of p.tags; track t) { <span class="badge-soft badge-soft-primary">{{ t }}</span> }</div>
+        <h1 class="h3 fw-800 mb-2">{{ p.name }}</h1>
+        <div class="d-flex align-items-center gap-3 mb-3 fs-7">
+          @if (p.ratingCount) { <span><wc-stars [value]="p.ratingAverage" /> <a class="ms-1" (click)="tab.set('reviews')" role="button">{{ p.ratingCount }} reviews</a></span> }
+          <span class="text-muted">{{ p.category.name }}</span>
+          <button class="btn btn-link btn-sm p-0 ms-auto" (click)="share()"><i class="bi bi-share me-1"></i>Share</button>
+        </div>
+
+        @if (p.offer; as o) {
+          <a class="offer-strip mb-3" [routerLink]="['/offers', o.slug]" [style.--oc]="o.themeColor">
+            <i class="bi bi-stars fs-5"></i>
+            <span class="flex-grow-1">
+              <b>{{ o.name }}</b>@if (offerSaving() > 0) { — you save {{ offerSaving() | inr }} }
+              <span class="d-block fs-8 opacity-75">Offer ends in {{ offerEnds() }}@if (o.couponCode) { · extra savings with code <b>{{ o.couponCode }}</b> }</span>
+            </span>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        }
+        <div class="d-flex align-items-baseline flex-wrap gap-2 mb-1">
+          <span class="price-big">{{ price() | inr }}</span>
+          @if (offerSaving() > 0 && discount() < 3) { <span class="text-quiet text-decoration-line-through fs-5">{{ regular() | inr }}</span> }
+          @if (discount() >= 3) { <span class="text-quiet text-decoration-line-through fs-5">{{ mrp() | inr }}</span><span class="off-pill">{{ discount() }}% off</span> }
+        </div>
+        <p class="text-muted fs-7 mb-4">Inclusive of all taxes · Free delivery & assembly</p>
+
+        <!-- Options -->
+        @for (o of p.options; track o.id) {
+          <div class="mb-3">
+            <div class="fw-bold mb-2">{{ o.name }}: <span class="text-muted fw-normal">{{ selectedLabel(o) }}</span></div>
+            <div class="d-flex flex-wrap gap-2">
+              @for (v of o.values; track v.id) {
+                @if (v.colorCode && o.isColour) {
+                  <button class="color-opt" [class.on]="selectedValues()[o.id] === v.id" [style.background]="v.colorCode" [title]="v.value"
+                    [style.opacity]="isPossible(o.id, v.id) ? 1 : 0.35" (click)="select(o.id, v.id)" [attr.aria-label]="v.value"></button>
+                } @else {
+                  <button class="opt" [class.on]="selectedValues()[o.id] === v.id" [class.na]="!isPossible(o.id, v.id)" (click)="select(o.id, v.id)">{{ v.value }}</button>
+                }
+              }
+            </div>
+          </div>
+        }
+        @if (!p.options.length && p.variants.length > 1) {
+          <div class="mb-3">
+            <div class="fw-bold mb-2">Choose option</div>
+            <div class="d-flex flex-wrap gap-2">
+              @for (v of p.variants; track v.id) {
+                <button class="opt" [class.on]="selectedVariantId() === v.id" [class.na]="!v.isAvailable" (click)="selectedVariantId.set(v.id)">{{ v.name }}</button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (needsChoice()) { <div class="alert alert-warning py-2 fs-7">This combination isn't available — please choose another option.</div> }
+
+        <div class="d-flex flex-wrap gap-2 align-items-center my-4">
+          <div class="qty">
+            <button (click)="qty.set(qty() > 1 ? qty() - 1 : 1)" aria-label="Decrease quantity"><i class="bi bi-dash"></i></button>
+            <span>{{ qty() }}</span>
+            <button (click)="qty.set(qty() < 10 ? qty() + 1 : 10)" aria-label="Increase quantity"><i class="bi bi-plus"></i></button>
+          </div>
+          @if (available()) {
+            <button class="btn btn-phoenix-secondary btn-lg flex-grow-1" (click)="addToCart()"><i class="bi bi-bag-plus me-1"></i>Add to cart</button>
+            <button class="btn btn-primary btn-lg flex-grow-1" (click)="addToCart(true)">Buy now</button>
+          } @else {
+            <button class="btn btn-secondary btn-lg flex-grow-1" disabled>Currently unavailable</button>
+            <a class="btn btn-phoenix-secondary btn-lg" routerLink="/contact" [queryParams]="{ product: p.id }">Notify me</a>
+          }
+        </div>
+
+        <!-- Pincode -->
+        <div class="border rounded-3 p-3 mb-3">
+          <div class="fw-bold mb-2"><i class="bi bi-geo-alt me-1"></i>Check delivery</div>
+          <form class="d-flex gap-2" (ngSubmit)="checkPincode()">
+            <input class="form-control" name="pin" [(ngModel)]="pincode" maxlength="6" inputmode="numeric" placeholder="Enter pincode" aria-label="Pincode" />
+            <button class="btn btn-soft-primary">Check</button>
+          </form>
+          @if (pin(); as r) {
+            <div class="mt-2 fs-7" [class.text-success]="r.serviceable" [class.text-danger]="!r.serviceable">
+              <i class="bi" [class.bi-check-circle-fill]="r.serviceable" [class.bi-x-circle-fill]="!r.serviceable"></i>
+              @if (r.serviceable) { Delivery by <b>{{ deliveryBy() | date: 'EEE, d MMM' }}</b>{{ r.area ? ' to ' + r.area : '' }}{{ r.codAvailable ? ' · Cash on delivery available' : '' }} }
+              @else { {{ r.message }} }
+            </div>
+          }
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-6"><div class="perk"><i class="bi bi-truck"></i><div><b>Free delivery</b><div class="text-muted fs-8">Ships in {{ p.deliveryDays }}–{{ p.deliveryDays + 3 }} days</div></div></div></div>
+          @if (p.assemblyIncluded) { <div class="col-6"><div class="perk"><i class="bi bi-tools"></i><div><b>Free assembly</b><div class="text-muted fs-8">At your home</div></div></div></div> }
+          <div class="col-6"><div class="perk"><i class="bi bi-shield-check"></i><div><b>Warranty</b><div class="text-muted fs-8">{{ p.warranty ? 'Manufacturer warranty' : 'As per manufacturer' }}</div></div></div></div>
+          <div class="col-6"><div class="perk"><i class="bi bi-arrow-repeat"></i><div><b>Easy returns</b><div class="text-muted fs-8">7 days for defects</div></div></div></div>
+        </div>
+
+        @if (askLink(); as wa) {
+          <a class="btn btn-outline-success w-100" [href]="wa" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-1"></i>Ask a question on WhatsApp</a>
+        }
+      </div>
+    </div>
+
+    <!-- Details / reviews -->
+    <div class="mt-5">
+      <ul class="nav nav-underline gap-4 border-bottom mb-4">
+        <li class="nav-item"><a class="nav-link fw-bold cursor-pointer" [class.active]="tab() === 'details'" (click)="tab.set('details')">Product details</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold cursor-pointer" [class.active]="tab() === 'reviews'" (click)="tab.set('reviews')">Reviews ({{ p.ratingCount }})</a></li>
+      </ul>
+      @if (tab() === 'details') {
+        <div class="row g-4">
+          <div class="col-lg-7">
+            @if (highlights().length) {
+              <h5 class="fw-800">Highlights</h5>
+              <ul class="list-unstyled">@for (h of highlights(); track $index) { <li class="mb-2 d-flex gap-2"><i class="bi bi-check2 text-success"></i><span>{{ h }}</span></li> }</ul>
+            }
+            @if (p.descriptionHtml) { <div class="desc-html mt-3" [innerHTML]="p.descriptionHtml"></div> }
+          </div>
+          <div class="col-lg-5">
+            <h5 class="fw-800">Specifications</h5>
+            <table class="table spec">
+              <tbody>
+                <tr><th>Category</th><td>{{ p.category.name }}</td></tr>
+                @if (p.material) { <tr><th>Material</th><td>{{ p.material }}</td></tr> }
+                @if (p.dimensions) { <tr><th>Dimensions</th><td>{{ p.dimensions }}</td></tr> }
+                @if (p.warranty) { <tr><th>Warranty</th><td>{{ p.warranty }}</td></tr> }
+                @if (variant(); as v) { <tr><th>Selected option</th><td>{{ v.name }}</td></tr> }
+                <tr><th>Assembly</th><td>{{ p.assemblyIncluded ? 'Included, free of cost' : 'Self assembly' }}</td></tr>
+                <tr><th>Delivery</th><td>{{ p.deliveryDays }}–{{ p.deliveryDays + 3 }} working days</td></tr>
+                @if (p.hsnCode) { <tr><th>HSN</th><td>{{ p.hsnCode }}</td></tr> }
+              </tbody>
+            </table>
+            <p class="text-muted fs-8">Colours may vary slightly due to photography and screen settings. Dimensions are approximate.</p>
+          </div>
+        </div>
+      } @else {
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="border rounded-3 p-4 text-center">
+              <div class="display-5 fw-800">{{ p.ratingAverage || '–' }}</div>
+              <wc-stars [value]="p.ratingAverage" />
+              <div class="text-muted fs-7 mt-1">{{ p.ratingCount }} ratings</div>
+            </div>
+            @if (auth.isLoggedIn()) {
+              @if (!reviewSent()) {
+                <form class="border rounded-3 p-3 mt-3" (ngSubmit)="submitReview()">
+                  <div class="fw-bold mb-2">Write a review</div>
+                  <div class="mb-2 fs-4 text-warning">@for (s of [1, 2, 3, 4, 5]; track s) { <i class="bi cursor-pointer" [class.bi-star-fill]="s <= reviewForm.rating" [class.bi-star]="s > reviewForm.rating" (click)="reviewForm.rating = s"></i> }</div>
+                  <input class="form-control mb-2" name="t" [(ngModel)]="reviewForm.title" placeholder="Title" />
+                  <textarea class="form-control mb-2" name="c" rows="3" [(ngModel)]="reviewForm.comment" placeholder="How do you like it?"></textarea>
+                  <button class="btn btn-primary btn-sm">Submit review</button>
+                </form>
+              }
+            } @else { <p class="mt-3 fs-7"><a routerLink="/login">Sign in</a> to write a review.</p> }
+          </div>
+          <div class="col-lg-8">
+            @for (r of reviews()?.items ?? []; track r.id) {
+              <div class="border-bottom pb-3 mb-3">
+                <div class="d-flex justify-content-between"><wc-stars [value]="r.rating" /><span class="text-muted fs-8">{{ r.createdAt | date: 'd MMM yyyy' }}</span></div>
+                @if (r.title) { <div class="fw-bold mt-1">{{ r.title }}</div> }
+                <p class="mb-1 fs-7">{{ r.comment }}</p>
+                <span class="fs-8 text-muted">{{ r.userName }} @if (r.isVerifiedPurchase) { · <span class="text-success"><i class="bi bi-patch-check-fill"></i> Verified buyer</span> }</span>
+              </div>
+            } @empty { <div class="empty-state py-4"><i class="bi bi-chat-square-heart"></i>No reviews yet — be the first after your delivery.</div> }
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (related().length) {
+      <section class="mt-5">
+        <h3 class="section-title mb-3">You may also like</h3>
+        <wc-scroller>@for (r of related(); track r.id) { <wc-product-card [product]="r" /> }</wc-scroller>
+      </section>
+    }
+  </div>
+
+  <div class="sticky-buy d-lg-none d-flex align-items-center gap-2">
+    <div class="me-auto"><div class="fw-800">{{ price() | inr }}</div>@if (discount() >= 3) { <div class="fs-8 text-success fw-bold">{{ discount() }}% off</div> }</div>
+    @if (available()) {
+      <button class="btn btn-phoenix-secondary" (click)="addToCart()"><i class="bi bi-bag-plus"></i></button>
+      <button class="btn btn-primary" (click)="addToCart(true)">Buy now</button>
+    } @else { <button class="btn btn-secondary" disabled>Unavailable</button> }
+  </div>
+} @else if (notFound()) {
+  <div class="container-xxl"><div class="empty-state"><i class="bi bi-box"></i><h4>This product isn't available</h4><a class="btn btn-primary mt-2" routerLink="/shop">Browse furniture</a></div></div>
+} @else {
+  <div class="container-xxl py-4"><div class="row g-4"><div class="col-lg-6"><div class="skeleton" style="aspect-ratio: 1"></div></div><div class="col-lg-6"><div class="skeleton mb-3" style="height: 2.5rem"></div><div class="skeleton mb-3" style="height: 3rem; width: 40%"></div><div class="skeleton" style="height: 200px"></div></div></div></div>
+}

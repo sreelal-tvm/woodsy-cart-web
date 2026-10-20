@@ -1,0 +1,195 @@
+<header class="site-header">
+  <!-- Top bar: logo · search · actions -->
+  <div class="topbar">
+    <div class="container-xxl d-flex align-items-center gap-3">
+      <button class="icon-btn d-lg-none" (click)="drawerOpen.set(true)" aria-label="Open menu"><i class="bi bi-list"></i></button>
+      <a routerLink="/" class="brand d-flex align-items-center gap-2">
+        <img src="logo.svg" alt="" width="32" height="32" />
+        <span>woodsycart</span>
+      </a>
+      <form class="search d-none d-md-block" (ngSubmit)="search()" role="search">
+        <i class="bi bi-search"></i>
+        <input class="form-control" name="q" [(ngModel)]="q" placeholder="Search" aria-label="Search products" />
+      </form>
+      <div class="actions ms-auto">
+        <button class="theme-btn" (click)="theme.toggle()" [attr.aria-label]="theme.dark() ? 'Switch to light mode' : 'Switch to dark mode'"
+          [title]="theme.dark() ? 'Light mode' : 'Dark mode'">
+          <i class="bi" [class.bi-sun]="!theme.dark()" [class.bi-moon-stars]="theme.dark()"></i>
+        </button>
+        <a class="icon-btn" routerLink="/cart" aria-label="Cart">
+          <i class="bi bi-cart3"></i>
+          @if (cart.count()) { <span class="count">{{ cart.count() }}</span> }
+        </a>
+        <div class="position-relative">
+          <button class="icon-btn" (click)="toggle('notifications')" aria-label="Order updates">
+            <i class="bi bi-bell"></i>
+            @if (updates().length) { <span class="dot"></span> }
+          </button>
+          @if (menu() === 'notifications') {
+            <div class="pop pop-right" style="width: 320px">
+              <div class="pop-head">Order updates</div>
+              @if (auth.isLoggedIn()) {
+                @for (o of updates(); track o.id) {
+                  <a class="pop-item d-flex gap-2 align-items-center" [routerLink]="['/order', o.orderNumber]">
+                    <img [src]="o.firstItemImage | media" alt="" class="rounded" style="width: 40px; height: 40px; object-fit: cover" />
+                    <span class="min-w-0"><span class="d-block fw-bold text-truncate fs-7">{{ o.firstItemName }}</span>
+                      <span class="fs-8 text-muted">#{{ o.orderNumber }} · <span class="text-primary fw-bold">{{ o.status | orderStatus }}</span></span>
+                      @if (recentlyRescheduled(o)) { <span class="d-block fs-8 fw-bold text-warning"><i class="bi bi-calendar-event me-1"></i>New delivery date: {{ o.expectedDeliveryDate | date: 'EEE, d MMM' }}</span> }
+                      @else if (o.expectedDeliveryDate) { <span class="d-block fs-8 text-muted">Expected {{ o.expectedDeliveryDate | date: 'EEE, d MMM' }}</span> }</span>
+                  </a>
+                } @empty { <div class="p-3 text-muted fs-7">No orders on the way right now.</div> }
+                <a class="pop-foot" routerLink="/account/orders">View all orders</a>
+              } @else {
+                <div class="p-3 fs-7 text-muted">Sign in to see updates on your orders here, or track an order with its number.</div>
+                <a class="pop-foot" routerLink="/track">Track an order</a>
+              }
+            </div>
+          }
+        </div>
+        <div class="position-relative">
+          <button class="icon-btn" (click)="toggle('user')" aria-label="Account">
+            @if (auth.user(); as u) { <span class="avatar">{{ u.fullName.charAt(0) }}</span> } @else { <i class="bi bi-person"></i> }
+          </button>
+          @if (menu() === 'user') {
+            <div class="pop pop-right" style="width: 240px">
+              @if (auth.user(); as u) {
+                <div class="pop-head"><div class="fw-bold text-truncate">{{ u.fullName }}</div><div class="text-muted fs-8 text-truncate fw-normal">{{ u.email }}</div></div>
+                <a class="pop-item" routerLink="/account/orders"><i class="bi bi-bag-check me-2"></i>My orders</a>
+                <a class="pop-item" routerLink="/wishlist"><i class="bi bi-heart me-2"></i>Wishlist</a>
+                <a class="pop-item" routerLink="/account/addresses"><i class="bi bi-geo-alt me-2"></i>Addresses</a>
+                <a class="pop-item" routerLink="/account/profile"><i class="bi bi-person me-2"></i>Profile</a>
+                <button class="pop-item text-danger" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button>
+              } @else {
+                <div class="p-3">
+                  <div class="fw-bold mb-1">Welcome to WoodsyCart</div>
+                  <div class="text-muted fs-8 mb-3">Sign in to track orders and check out faster.</div>
+                  <a class="btn btn-primary btn-sm w-100 mb-2" routerLink="/login">Sign in</a>
+                  <a class="btn btn-phoenix-secondary btn-sm w-100" routerLink="/register">Create account</a>
+                </div>
+                <a class="pop-foot" routerLink="/track">Track an order</a>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="container-xxl d-md-none pb-2">
+      <form class="search mw-100" (ngSubmit)="search()" role="search">
+        <i class="bi bi-search"></i>
+        <input class="form-control" name="qm" [(ngModel)]="q" placeholder="Search furniture" aria-label="Search products" />
+      </form>
+    </div>
+  </div>
+
+  <!-- Nav bar: categories · page links -->
+  <nav class="navbar-row d-none d-lg-block" aria-label="Main">
+    <div class="container-xxl d-flex align-items-center">
+      <div class="position-relative">
+        <button class="category-btn" (click)="toggle('category')" [attr.aria-expanded]="menu() === 'category'">
+          <i class="bi bi-list me-2"></i>Category
+        </button>
+        @if (menu() === 'category') {
+          <div class="pop mega">
+            <div class="mega-grid">
+              @for (c of categories(); track c.id) {
+                <a class="mega-item" routerLink="/shop" [queryParams]="{ category: c.slug }">
+                  <img [src]="c.imageUrl | media" alt="" loading="lazy" />
+                  <span class="min-w-0"><span class="d-block fw-bold text-truncate">{{ c.name }}</span><span class="text-muted fs-8">{{ c.productCount }} items</span></span>
+                </a>
+              }
+            </div>
+            <a class="pop-foot" routerLink="/shop">Browse all furniture <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        }
+      </div>
+      <div class="nav-links ms-auto">
+        @for (l of navLinks(); track l.label) {
+          <a [routerLink]="l.link" [queryParams]="l.query ?? null" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: !!l.exact }" [class.nav-offer]="l.highlight">@if (l.highlight) {<i class="bi bi-stars me-1"></i>}{{ l.label }}</a>
+        }
+      </div>
+    </div>
+  </nav>
+</header>
+@if (menu()) { <div class="click-catcher" (click)="menu.set('')"></div> }
+
+@if (drawerOpen()) {
+  <div class="drawer-backdrop" (click)="drawerOpen.set(false)"></div>
+  <aside class="drawer" aria-label="Menu">
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <span class="fw-800 fs-5">Menu</span>
+      <button class="btn-close" (click)="drawerOpen.set(false)" aria-label="Close"></button>
+    </div>
+    <nav class="p-2">
+      @for (l of navLinks(); track l.label) { <a class="drawer-link" [class.nav-offer]="l.highlight" [routerLink]="l.link" [queryParams]="l.query ?? null">@if (l.highlight) {<i class="bi bi-stars me-1"></i>}{{ l.label }}</a> }
+      <div class="drawer-title">Shop by category</div>
+      @for (c of categories(); track c.id) {
+        <a class="drawer-link" routerLink="/shop" [queryParams]="{ category: c.slug }">{{ c.name }} <span class="text-quiet fs-8">{{ c.productCount }}</span></a>
+      }
+      <hr />
+      <a class="drawer-link" routerLink="/contact">Contact us</a>
+      <a class="drawer-link" routerLink="/about">About WoodsyCart</a>
+    </nav>
+  </aside>
+}
+
+<main class="site-main">
+  <router-outlet />
+</main>
+
+<footer class="site-footer">
+  <div class="container-xxl">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a routerLink="/" class="brand d-flex align-items-center gap-2 mb-3"><img src="logo.svg" alt="" width="32" height="32" /><span>woodsycart</span></a>
+        <p class="text-muted fs-7">{{ site.settings()?.tagline || 'Factory-direct furniture, delivered across Bengaluru.' }}</p>
+        <div class="d-flex gap-2">
+          @if (site.settings()?.instagramUrl) { <a class="social" [href]="site.settings()!.instagramUrl" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a> }
+          @if (site.settings()?.facebookUrl) { <a class="social" [href]="site.settings()!.facebookUrl" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook"></i></a> }
+          @if (site.settings()?.youtubeUrl) { <a class="social" [href]="site.settings()!.youtubeUrl" target="_blank" rel="noopener" aria-label="YouTube"><i class="bi bi-youtube"></i></a> }
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Shop</h6>
+        @for (c of categories().slice(0, 6); track c.id) { <a routerLink="/shop" [queryParams]="{ category: c.slug }">{{ c.name }}</a> }
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Help</h6>
+        <a routerLink="/track">Track your order</a>
+        <a routerLink="/faq">FAQs</a>
+        <a routerLink="/contact">Contact us</a>
+        <a routerLink="/account/orders">My orders</a>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Policies</h6>
+        <a routerLink="/policies/shipping">Shipping & delivery</a>
+        <a routerLink="/policies/returns">Returns & refunds</a>
+        <a routerLink="/policies/privacy">Privacy policy</a>
+        <a routerLink="/policies/terms">Terms of service</a>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Contact</h6>
+        @if (site.settings(); as s) {
+          @if (s.phone) { <a [href]="'tel:' + s.phone">{{ s.phone }}</a> }
+          <a [href]="'mailto:' + s.email">{{ s.email }}</a>
+          <span class="text-muted fs-7 d-block mt-1">{{ s.address }}</span>
+        }
+      </div>
+    </div>
+    <div class="d-flex flex-wrap justify-content-between gap-2 border-top mt-4 pt-3 text-muted fs-8">
+      <span>© {{ year }} {{ site.settings()?.businessName || 'WoodsyCart' }}. All rights reserved.</span>
+      <span><i class="bi bi-shield-check me-1"></i>Secure payments · UPI · Cards · Net banking · Cash on delivery</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="bottom-nav d-lg-none" aria-label="Quick links">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-house"></i>Home</a>
+  <a routerLink="/shop" routerLinkActive="active"><i class="bi bi-grid"></i>Shop</a>
+  <a routerLink="/wishlist" routerLinkActive="active"><i class="bi bi-heart"></i>Wishlist</a>
+  <a routerLink="/cart" routerLinkActive="active"><i class="bi bi-cart3"></i>Cart @if (cart.count()) { <span class="count">{{ cart.count() }}</span> }</a>
+  <a [routerLink]="auth.isLoggedIn() ? '/account/orders' : '/login'" routerLinkActive="active"><i class="bi bi-person"></i>Account</a>
+</nav>
+
+@if (site.whatsAppLink(); as wa) {
+  <a class="wa-float" [href]="wa" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"><i class="bi bi-whatsapp"></i></a>
+}
