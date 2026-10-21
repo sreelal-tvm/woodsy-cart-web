@@ -26,6 +26,14 @@ export function loadRazorpay(): Promise<void> {
 
 const GUEST_KEY = 'wc_guest_checkout';
 
+/** Indian mobile: 10 digits starting 6–9, optionally with +91 / 0 / spaces / dashes (same rule as the server). */
+function validMobile(phone?: string | null): boolean {
+  let d = (phone ?? '').replace(/\D/g, '');
+  if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
+  else if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+  return /^[6-9]\d{9}$/.test(d);
+}
+
 @Component({
   selector: 'wc-checkout',
   imports: [FormsModule, RouterLink, AddressFormComponent, ...SHARED],
@@ -190,7 +198,8 @@ export class CheckoutPage {
   // Guests (remembered for this browser session so a refresh doesn't lose the form)
   private savedGuest = JSON.parse(sessionStorage.getItem(GUEST_KEY) ?? 'null') as { email: string; address: Address | null } | null;
   guestEmail = this.savedGuest?.email ?? '';
-  protected guestAddress = signal<Address | null>(this.savedGuest?.address ?? null);
+  // A remembered address with an invalid mobile number (e.g. saved before numbers were checked) opens in the form to be fixed.
+  protected guestAddress = signal<Address | null>(this.savedGuest?.address && validMobile(this.savedGuest.address.phone) ? this.savedGuest.address : null);
   protected guestDraft: Address = this.savedGuest?.address ? { ...this.savedGuest.address } : emptyAddress();
   private guestEmailValid = signal(/^\S+@\S+\.\S+$/.test(this.guestEmail));
 
@@ -212,7 +221,11 @@ export class CheckoutPage {
     if (!this.auth.isLoggedIn()) {
       if (!this.guestEmailValid()) return 'Enter your email, or sign in, to continue.';
       if (!this.guestAddress()) return 'Add a delivery address to continue.';
-    } else if (!this.addressId()) return 'Add a delivery address to continue.';
+    } else {
+      const a = this.addresses().find(x => x.id === this.addressId());
+      if (!a) return 'Add a delivery address to continue.';
+      if (!validMobile(a.phone)) return 'The mobile number on this address is not valid. Edit it under My account → Addresses, or add a new address.';
+    }
     return null;
   });
 
@@ -290,7 +303,7 @@ export class CheckoutPage {
       addressId: guest ? null : this.addressId(),
       address: guest && g ? {
         label: 'Home', fullName: g.fullName, phone: g.phone, line1: g.line1, line2: g.line2 || null, landmark: g.landmark || null,
-        city: g.city, state: g.state, pincode: g.pincode, isDefault: false
+        city: g.city, state: g.state, pincode: g.pincode, isDefault: false, latitude: g.latitude ?? null, longitude: g.longitude ?? null
       } : null,
       guestEmail: guest ? this.guestEmail.trim() : null,
       couponCode: sessionStorage.getItem('wc_coupon'),

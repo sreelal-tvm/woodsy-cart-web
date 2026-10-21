@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SeoService } from './core/seo.service';
 import { ToastService } from './core/toast.service';
 
 @Component({
@@ -16,4 +17,5 @@ import { ToastService } from './core/toast.service';
 })
 export class App {
   protected toast = inject(ToastService);
+  private seo = inject(SeoService); // search / share tags for every page
 }

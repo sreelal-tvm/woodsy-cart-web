@@ -29,12 +29,22 @@
   ],
   "dataGroups": [
     {
+      "name": "runtime-config",
+      "urls": [
+        "/config.json"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 1,
+        "maxAge": "30d",
+        "timeout": "4s"
+      }
+    },
+    {
       "name": "catalog-api",
       "urls": [
-        "https://api.woodsycart.in/api/catalog/**",
-        "https://api.woodsycart.in/api/site/settings",
-        "http://localhost:5100/api/catalog/**",
-        "http://localhost:5100/api/site/settings"
+        "http*://*/api/catalog/**",
+        "http*://*/api/site/settings"
       ],
       "cacheConfig": {
         "strategy": "freshness",
@@ -46,8 +56,7 @@
     {
       "name": "product-media",
       "urls": [
-        "https://api.woodsycart.in/media/**",
-        "http://localhost:5100/media/**"
+        "http*://*/media/**"
       ],
       "cacheConfig": {
         "strategy": "performance",

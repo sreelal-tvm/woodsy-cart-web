@@ -5,10 +5,11 @@ import { Home } from '../core/models';
 import { SiteService } from '../core/store';
 import { SHARED } from '../shared/shared';
 import { OfferBannerComponent } from './offers';
+import { InstagramComponent } from '../shared/instagram';
 
 @Component({
   selector: 'wc-home',
-  imports: [RouterLink, OfferBannerComponent, ...SHARED],
+  imports: [RouterLink, OfferBannerComponent, InstagramComponent, ...SHARED],
   template: `
     @if (home(); as h) {
       <!-- Festival offers (only while running) -->
@@ -99,6 +100,8 @@ import { OfferBannerComponent } from './offers';
           </div>
         </section>
       }
+
+      <section class="container-xxl mb-4"><wc-instagram variant="banner" /></section>
 
       <section class="container-xxl">
         <div class="promise row g-3 g-md-4 mx-0">

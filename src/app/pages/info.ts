@@ -102,7 +102,7 @@ export class InfoPage {
   readonly page = input<string>();
   protected key = computed(() => this.page() ?? 'not-found');
   protected name = computed(() => this.site.settings()?.businessName ?? 'WoodsyCart');
-  protected email = computed(() => this.site.settings()?.email ?? 'support@woodsycart.in');
+  protected email = computed(() => this.site.settings()?.email || 'us');
 
   protected faqs: Faq[] = [
     { q: 'Where do you deliver?', a: 'Across Bengaluru and nearby areas. Check your pincode on any product page to confirm.' },

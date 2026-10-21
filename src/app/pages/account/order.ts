@@ -7,13 +7,15 @@ import { OrderDetail, PlaceOrderResponse } from '../../core/models';
 import { AuthService, GuestOrders, SiteService } from '../../core/store';
 import { ToastService } from '../../core/toast.service';
 import { SHARED } from '../../shared/shared';
+import { InstagramComponent } from '../../shared/instagram';
 import { loadRazorpay } from '../checkout';
+import { OrderReviewsComponent } from './order-reviews';
 import { OrderViewComponent } from './order-view';
 import { UpiPayComponent } from './upi-pay';
 
 @Component({
   selector: 'wc-order',
-  imports: [FormsModule, RouterLink, DatePipe, OrderViewComponent, UpiPayComponent, ...SHARED],
+  imports: [InstagramComponent, FormsModule, RouterLink, DatePipe, OrderViewComponent, OrderReviewsComponent, UpiPayComponent, ...SHARED],
   template: `
     <div class="container-xxl py-4">
       @if (o(); as o) {
@@ -29,6 +31,7 @@ import { UpiPayComponent } from './upi-pay';
             <h1 class="h3 fw-800 mt-2">{{ justPaid() ? 'Payment received — thank you!' : 'Thank you! Your order is placed.' }}</h1>
             <p class="text-muted mb-0">We've sent the details to {{ o.shipEmail }}. Your furniture will be crafted and delivered to {{ o.shipCity }}.</p>
           </div>
+          <div class="mb-4"><wc-instagram variant="card" /></div>
         }
         @if (!auth.isLoggedIn()) {
           <div class="guest-cta d-flex flex-wrap align-items-center gap-3 mb-4">
@@ -79,6 +82,7 @@ import { UpiPayComponent } from './upi-pay';
           </div></div>
         }
 
+        @if (o.canReview) { <wc-order-reviews [order]="o" [access]="q()" /> }
         <wc-order-view [order]="o" />
       } @else if (notFound()) {
         <div class="empty-state">
@@ -117,7 +121,7 @@ export class OrderPage {
 
   /** Guest access: token from the link (email / checkout redirect) or remembered on this device. */
   private token = computed(() => this.tokenParam() || GuestOrders.get(this.orderNumber()) || null);
-  private q = computed(() => ({ token: this.token() }));
+  protected q = computed(() => ({ token: this.token() }));
 
   constructor() {
     effect(() => {

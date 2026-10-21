@@ -1,0 +1,4 @@
+{
+  "/robots.txt": { "target": "http://localhost:5100", "pathRewrite": { "^/robots.txt": "/api/seo/robots.txt" }, "changeOrigin": true },
+  "/sitemap.xml": { "target": "http://localhost:5100", "pathRewrite": { "^/sitemap.xml": "/api/seo/sitemap.xml" }, "changeOrigin": true }
+}

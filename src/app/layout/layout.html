@@ -190,6 +190,7 @@
   <a [routerLink]="auth.isLoggedIn() ? '/account/orders' : '/login'" routerLinkActive="active"><i class="bi bi-person"></i>Account</a>
 </nav>
 
+<wc-instagram variant="float" />
 @if (site.whatsAppLink(); as wa) {
   <a class="wa-float" [href]="wa" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"><i class="bi bi-whatsapp"></i></a>
 }

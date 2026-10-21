@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../core/api.service';
 import { OrderDetail } from '../core/models';
+import { OrderReviewsComponent } from './account/order-reviews';
 import { OrderViewComponent } from './account/order-view';
 
 @Component({
   selector: 'wc-track',
-  imports: [FormsModule, OrderViewComponent],
+  imports: [FormsModule, OrderViewComponent, OrderReviewsComponent],
   template: `
     <div class="container-xxl py-4">
       <div class="mx-auto" style="max-width: 560px">
@@ -23,6 +24,7 @@ import { OrderViewComponent } from './account/order-view';
       </div>
       @if (order(); as o) {
         <h4 class="fw-800 mb-3">Order #{{ o.orderNumber }}</h4>
+        @if (o.canReview) { <wc-order-reviews [order]="o" [access]="{ phone: trackedPhone }" /> }
         <wc-order-view [order]="o" />
       }
     </div>
@@ -31,6 +33,8 @@ import { OrderViewComponent } from './account/order-view';
 export class TrackPage {
   private api = inject(ApiService);
   orderNumber = ''; phone = '';
+  /** The phone the order was found with — rating an item from here needs the full number. */
+  protected trackedPhone = '';
   protected order = signal<OrderDetail | null>(null);
   protected error = signal('');
   protected busy = signal(false);
@@ -39,7 +43,7 @@ export class TrackPage {
     this.busy.set(true);
     this.error.set('');
     this.api.get<OrderDetail>('orders/track', { orderNumber: this.orderNumber.trim(), phone: this.phone.replace(/\D/g, '') }).subscribe({
-      next: o => { this.order.set(o); this.busy.set(false); },
+      next: o => { this.trackedPhone = this.phone.replace(/\D/g, ''); this.order.set(o); this.busy.set(false); },
       error: e => { this.order.set(null); this.error.set(e.error?.message ?? 'Order not found'); this.busy.set(false); }
     });
   }

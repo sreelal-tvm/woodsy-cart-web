@@ -16,10 +16,15 @@ import { AuthService } from '../core/store';
       <form class="card card-body p-4" (ngSubmit)="submit()">
         @if (register()) {
           <div class="mb-3"><label class="form-label" for="n">Full name</label><input id="n" class="form-control" name="n" [(ngModel)]="fullName" required autocomplete="name" /></div>
-          <div class="mb-3"><label class="form-label" for="p">Mobile number</label><input id="p" class="form-control" name="p" [(ngModel)]="phone" inputmode="tel" autocomplete="tel" pattern="(\+?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
+          <div class="mb-3"><label class="form-label" for="p">Mobile number</label><input id="p" class="form-control" name="p" [(ngModel)]="phone" inputmode="tel" autocomplete="tel" pattern="([+]?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
         }
         <div class="mb-3"><label class="form-label" for="e">Email</label><input id="e" type="email" class="form-control" name="e" [(ngModel)]="email" required autocomplete="email" /></div>
-        <div class="mb-3"><label class="form-label" for="pw">Password</label><input id="pw" type="password" class="form-control" name="pw" [(ngModel)]="password" required
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <label class="form-label" for="pw">Password</label>
+            @if (!register()) { <a class="fs-8" routerLink="/forgot-password" [queryParams]="{ email: email || null }">Forgot password?</a> }
+          </div>
+          <input id="pw" type="password" class="form-control" name="pw" [(ngModel)]="password" required
           [autocomplete]="register() ? 'new-password' : 'current-password'" />
           @if (register()) { <div class="form-text">At least 8 characters.</div> }</div>
         @if (error()) { <div class="alert alert-danger py-2 fs-7">{{ error() }}</div> }
@@ -29,7 +34,6 @@ import { AuthService } from '../core/store';
           @else { New to WoodsyCart? <a routerLink="/register" [queryParams]="{ returnUrl: returnUrl() }">Create an account</a> }
         </p>
       </form>
-      <p class="text-center text-muted fs-8 mt-3">Forgot your password? Message us on WhatsApp and we'll help you reset it.</p>
     </div>
   `
 })

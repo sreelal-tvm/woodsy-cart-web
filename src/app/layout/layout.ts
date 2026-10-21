@@ -7,13 +7,14 @@ import { ApiService } from '../core/api.service';
 import { Category, Offer, OrderSummary } from '../core/models';
 import { AuthService, CartService, SiteService, ThemeService, WishlistService } from '../core/store';
 import { MediaPipe, OrderStatusPipe } from '../shared/shared';
+import { InstagramComponent } from '../shared/instagram';
 
 type Menu = '' | 'category' | 'notifications' | 'user';
 interface NavLink { label: string; link: string; exact?: boolean; query?: Record<string, string>; highlight?: boolean; }
 
 @Component({
   selector: 'wc-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, MediaPipe, OrderStatusPipe],
+  imports: [InstagramComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, MediaPipe, OrderStatusPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })

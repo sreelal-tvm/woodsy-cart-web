@@ -39,6 +39,16 @@ export class AuthService {
     return this.api.post<AuthResponse>('auth/login', { email, password }).pipe(tap(r => this.persist(r)));
   }
 
+  /** Emails a reset link (the answer is the same whether or not the email has an account). */
+  forgotPassword(email: string) {
+    return this.api.post<{ message: string }>('auth/forgot-password', { email });
+  }
+
+  /** Sets the new password from the emailed link and signs the customer in. */
+  resetPassword(email: string, token: string, newPassword: string) {
+    return this.api.post<AuthResponse>('auth/reset-password', { email, token, newPassword }).pipe(tap(r => this.persist(r)));
+  }
+
   register(fullName: string, email: string, phone: string, password: string) {
     return this.api.post<AuthResponse>('auth/register', { fullName, email, phone, password }).pipe(tap(r => this.persist(r)));
   }

@@ -1,8 +1,8 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../core/seo.service';
 import { ApiService } from '../core/api.service';
 import { Offer, Paged, ProductCard } from '../core/models';
 import { SHARED } from '../shared/shared';
@@ -171,7 +171,7 @@ export class OffersPage {
 export class OfferPage {
   readonly slug = input.required<string>();
   private api = inject(ApiService);
-  private title = inject(Title);
+  private seo = inject(SeoService);
   protected offer = signal<Offer | null>(null);
   protected notFound = signal(false);
   protected products = signal<ProductCard[]>([]);
@@ -188,7 +188,7 @@ export class OfferPage {
       this.api.get<Offer>(`catalog/offers/${slug}`).subscribe({
         next: o => {
           this.offer.set(o);
-          this.title.setTitle(`${o.name} · WoodsyCart`);
+          this.seo.page({ title: o.name, description: o.tagline || o.description, image: this.seo.absoluteImage(o.bannerImageUrl) });
         },
         error: () => this.notFound.set(true)
       });

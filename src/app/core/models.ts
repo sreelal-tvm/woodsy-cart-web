@@ -37,15 +37,18 @@ export interface Facets { priceMin: number; priceMax: number; categories: FacetI
 export interface Banner { id: number; title: string; subtitle?: string; imageUrl: string; linkUrl?: string; buttonText?: string; }
 export interface Home { banners: Banner[]; categories: Category[]; featured: ProductCard[]; newArrivals: ProductCard[]; bestDeals: ProductCard[]; collections: Collection[]; offers?: Offer[]; }
 
+export interface MyReviewStatus { canReview: boolean; orderNumber?: string; reviewed: boolean; }
 export interface Review { id: number; userName: string; rating: number; title?: string; comment?: string; isVerifiedPurchase: boolean; createdAt: string; }
 
 export interface SiteSettings {
   businessName: string; tagline?: string; phone: string; whatsApp?: string; email: string; address: string; shippingFee: number; freeShippingThreshold: number;
   codEnabled: boolean; codFee: number; codMaxOrderAmount: number; onlinePaymentEnabled: boolean; razorpayKeyId?: string;
   instagramUrl?: string; facebookUrl?: string; youtubeUrl?: string; defaultDeliveryDays: number;
+  /** Google Maps browser key — only present when maps are switched on in Admin. */
+  mapsApiKey?: string | null;
 }
 
-export interface PincodeCheck { pincode: string; serviceable: boolean; deliveryDays: number; extraCharge: number; codAvailable: boolean; area?: string; message: string; }
+export interface PincodeCheck { pincode: string; serviceable: boolean; deliveryDays: number; extraCharge: number; codAvailable: boolean; area?: string; message: string; nearBengaluru?: boolean; }
 
 export interface CartLine { productId: number; variantId?: number | null; quantity: number; }
 export interface QuoteLine {
@@ -67,7 +70,7 @@ export interface PaymentInstructions {
 }
 export type OrderStatus = 'Pending' | 'Confirmed' | 'PlacedWithVendor' | 'Dispatched' | 'OutForDelivery' | 'Delivered' | 'Cancelled' | 'Returned';
 
-export interface Address { id: number; label: string; fullName: string; phone: string; line1: string; line2?: string; landmark?: string; city: string; state: string; pincode: string; isDefault: boolean; }
+export interface Address { id: number; label: string; fullName: string; phone: string; line1: string; line2?: string; landmark?: string; city: string; state: string; pincode: string; isDefault: boolean; latitude?: number | null; longitude?: number | null; }
 
 export interface PlaceOrderResponse {
   orderNumber: string; total: number; paymentMethod: PaymentMethod; razorpayOrderId?: string; razorpayKeyId?: string; amountInPaise: number;
@@ -78,12 +81,16 @@ export interface PlaceOrderResponse {
 export interface OrderSummary { id: number; orderNumber: string; createdAt: string; status: OrderStatus; paymentStatus: string; paymentMethod: PaymentMethod; total: number; itemCount: number; firstItemImage?: string; firstItemName?: string;
   expectedDeliveryDate?: string; deliveryDateChangedAt?: string; }
 
+/** The customer's own review of a product in an order (approved or waiting). */
+export interface OrderReview { productId: number; rating: number; title?: string; comment?: string; isApproved: boolean; writtenAt: string; }
+
 export interface OrderDetail {
   id: number; orderNumber: string; createdAt: string; status: OrderStatus; paymentStatus: string; paymentMethod: PaymentMethod;
   shipName: string; shipPhone: string; shipEmail?: string; shipLine1: string; shipLine2?: string; shipLandmark?: string; shipCity: string; shipState: string; shipPincode: string;
   subTotal: number; discount: number; couponCode?: string; shippingFee: number; codFee: number; total: number; taxAmount: number; amountPaid: number;
   customerNotes?: string; expectedDeliveryDate?: string; deliveredAt?: string; trackingNumber?: string; courierName?: string; cancelReason?: string;
   originalDeliveryDate?: string; deliveryDateReason?: string; deliveryDateChangedAt?: string;
+  canReview?: boolean; reviews?: OrderReview[];
   items: { id: number; productId: number; variantId?: number; productName: string; variantName?: string; imageUrl?: string; slug?: string; quantity: number; unitMrp: number; unitPrice: number; lineTotal: number }[];
   history: { status: OrderStatus; note?: string; createdAt: string }[];
   canCancel: boolean; canReturn: boolean; hasInvoice: boolean; invoiceNumber?: string;

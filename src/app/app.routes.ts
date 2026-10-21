@@ -16,6 +16,8 @@ export const routes: Routes = [
       { path: 'checkout', loadComponent: () => import('./pages/checkout').then(m => m.CheckoutPage), title: 'Checkout · WoodsyCart' },
       { path: 'wishlist', canActivate: [authGuard], loadComponent: () => import('./pages/wishlist').then(m => m.WishlistPage), title: 'Wishlist · WoodsyCart' },
       { path: 'login', loadComponent: () => import('./pages/login').then(m => m.LoginPage), title: 'Sign in · WoodsyCart' },
+      { path: 'forgot-password', loadComponent: () => import('./pages/password').then(m => m.ForgotPasswordPage), title: 'Forgot password · WoodsyCart' },
+      { path: 'reset-password', loadComponent: () => import('./pages/password').then(m => m.ResetPasswordPage), title: 'Reset password · WoodsyCart' },
       { path: 'register', loadComponent: () => import('./pages/login').then(m => m.LoginPage), data: { register: true }, title: 'Create account · WoodsyCart' },
       { path: 'track', loadComponent: () => import('./pages/track').then(m => m.TrackPage), title: 'Track your order · WoodsyCart' },
       { path: 'order/:orderNumber', loadComponent: () => import('./pages/account/order').then(m => m.OrderPage), title: 'Order · WoodsyCart' },

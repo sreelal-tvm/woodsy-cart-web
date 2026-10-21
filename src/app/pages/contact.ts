@@ -8,7 +8,7 @@ import { AuthService, SiteService } from '../core/store';
   imports: [FormsModule],
   template: `
     <div class="container-xxl py-5">
-      <div class="row g-5">
+      <div class="row g-4">
         <div class="col-lg-5">
           <h1 class="h2 fw-800">We'd love to help</h1>
           <p class="text-muted">Questions about a product, a custom size, bulk orders for offices or cafés, or an order you've placed — reach out and we'll respond within a few hours.</p>
@@ -28,7 +28,7 @@ import { AuthService, SiteService } from '../core/store';
             <form class="card card-body p-4" (ngSubmit)="send()" #f="ngForm">
               <div class="row g-3">
                 <div class="col-md-6"><label class="form-label">Name</label><input class="form-control" name="n" [(ngModel)]="name" required /></div>
-                <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="p" [(ngModel)]="phone" required inputmode="tel" pattern="(\+?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
+                <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="p" [(ngModel)]="phone" required inputmode="tel" pattern="([+]?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
                 <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" name="e" [(ngModel)]="email" /></div>
                 <div class="col-md-6"><label class="form-label">Topic</label>
                   <select class="form-select" name="s" [(ngModel)]="subject">

@@ -13,7 +13,7 @@ import { ToastService } from '../../core/toast.service';
     <div class="card mb-4"><div class="card-body">
       <form class="row g-3" (ngSubmit)="save()">
         <div class="col-md-6"><label class="form-label">Full name</label><input class="form-control" name="n" [(ngModel)]="name" required /></div>
-        <div class="col-md-6"><label class="form-label">Mobile</label><input class="form-control" name="p" [(ngModel)]="phone" inputmode="tel" pattern="(\+?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
+        <div class="col-md-6"><label class="form-label">Mobile</label><input class="form-control" name="p" [(ngModel)]="phone" inputmode="tel" pattern="([+]?91[ -]?)?0?[6-9][0-9]{4}[ -]?[0-9]{5}" title="10-digit mobile number, e.g. 98765 43210" maxlength="16" /></div>
         <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" [value]="auth.user()?.email" disabled /></div>
         <div class="col-12"><button class="btn btn-primary">Save profile</button></div>
       </form>

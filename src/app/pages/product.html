@@ -4,7 +4,7 @@
       <a routerLink="/shop" [queryParams]="{ category: p.category.slug }">{{ p.category.name }}</a> <i class="bi bi-chevron-right text-quiet mx-1"></i>
       <span class="text-muted">{{ p.name }}</span></nav>
 
-    <div class="row g-4 g-xl-5">
+    <div class="row g-4">
       <!-- Gallery -->
       <div class="col-lg-6">
         <div class="position-sticky" style="top: 7rem">
@@ -104,12 +104,22 @@
             <a class="btn btn-phoenix-secondary btn-lg" routerLink="/contact" [queryParams]="{ product: p.id }">Notify me</a>
           }
         </div>
+        <div class="mb-3"><wc-instagram variant="inline" /></div>
 
         <!-- Pincode -->
         <div class="border rounded-3 p-3 mb-3">
           <div class="fw-bold mb-2"><i class="bi bi-geo-alt me-1"></i>Check delivery</div>
+          @if (addresses().length) {
+            <label class="form-label fs-8 text-muted mb-1" for="dto">Deliver to</label>
+            <select id="dto" class="form-select form-select-sm mb-2" [ngModel]="addressId()" (ngModelChange)="useAddress($event)" name="dto">
+              @for (a of addresses(); track a.id) {
+                <option [ngValue]="a.id">{{ a.label }} · {{ a.pincode }}{{ a.isDefault ? ' (default)' : '' }} — {{ a.line2 || a.line1 }}</option>
+              }
+              <option [ngValue]="0">Another pincode…</option>
+            </select>
+          }
           <form class="d-flex gap-2" (ngSubmit)="checkPincode()">
-            <input class="form-control" name="pin" [(ngModel)]="pincode" maxlength="6" inputmode="numeric" placeholder="Enter pincode" aria-label="Pincode" />
+            <input class="form-control" name="pin" [(ngModel)]="pincode" (ngModelChange)="onPincodeTyped()" maxlength="6" inputmode="numeric" placeholder="Enter pincode" aria-label="Pincode" />
             <button class="btn btn-soft-primary">Check</button>
           </form>
           @if (pin(); as r) {
@@ -174,25 +184,37 @@
               <wc-stars [value]="p.ratingAverage" />
               <div class="text-muted fs-7 mt-1">{{ p.ratingCount }} ratings</div>
             </div>
-            @if (auth.isLoggedIn()) {
-              @if (!reviewSent()) {
-                <form class="border rounded-3 p-3 mt-3" (ngSubmit)="submitReview()">
-                  <div class="fw-bold mb-2">Write a review</div>
+            <!-- Only customers who received the product can review it -->
+            @if (!auth.isLoggedIn()) {
+              <p class="mt-3 fs-7 text-muted"><i class="bi bi-patch-check me-1"></i>Reviews come from customers who received this product. Bought it?
+                <a routerLink="/login" [queryParams]="{ returnUrl: '/product/' + p.slug }">Sign in</a> or <a routerLink="/track">track your order</a> to rate it.</p>
+            } @else if (myReview(); as m) {
+              @if (m.reviewed || reviewSent()) {
+                <p class="mt-3 fs-7"><i class="bi bi-check-circle-fill text-success me-1"></i>{{ reviewSent() ? 'Thanks! Your review will appear once we have checked it.' : 'You have reviewed this product.' }}
+                  @if (m.orderNumber) { <a [routerLink]="['/order', m.orderNumber]" fragment="review">Edit your review</a> }</p>
+              } @else if (!m.canReview) {
+                <p class="mt-3 fs-7 text-muted"><i class="bi bi-patch-check me-1"></i>Only customers who received this product can review it. Once your order is delivered, rate it here or from <a routerLink="/account/orders">My orders</a>.</p>
+              } @else {
+                <form class="border rounded-3 p-3 mt-3" (ngSubmit)="submitReview(m.orderNumber!)">
+                  <div class="fw-bold mb-2">Rate your purchase <span class="badge text-bg-light border fw-normal ms-1"><i class="bi bi-patch-check-fill text-success me-1"></i>Verified buyer</span></div>
                   <div class="mb-2 fs-4 text-warning">@for (s of [1, 2, 3, 4, 5]; track s) { <i class="bi cursor-pointer" [class.bi-star-fill]="s <= reviewForm.rating" [class.bi-star]="s > reviewForm.rating" (click)="reviewForm.rating = s"></i> }</div>
                   <input class="form-control mb-2" name="t" [(ngModel)]="reviewForm.title" placeholder="Title" />
                   <textarea class="form-control mb-2" name="c" rows="3" [(ngModel)]="reviewForm.comment" placeholder="How do you like it?"></textarea>
                   <button class="btn btn-primary btn-sm">Submit review</button>
                 </form>
               }
-            } @else { <p class="mt-3 fs-7"><a routerLink="/login">Sign in</a> to write a review.</p> }
+            }
           </div>
           <div class="col-lg-8">
             @for (r of reviews()?.items ?? []; track r.id) {
               <div class="border-bottom pb-3 mb-3">
-                <div class="d-flex justify-content-between"><wc-stars [value]="r.rating" /><span class="text-muted fs-8">{{ r.createdAt | date: 'd MMM yyyy' }}</span></div>
-                @if (r.title) { <div class="fw-bold mt-1">{{ r.title }}</div> }
-                <p class="mb-1 fs-7">{{ r.comment }}</p>
-                <span class="fs-8 text-muted">{{ r.userName }} @if (r.isVerifiedPurchase) { · <span class="text-success"><i class="bi bi-patch-check-fill"></i> Verified buyer</span> }</span>
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <span class="fs-7"><span class="fw-bold">{{ r.userName }}</span>@if (r.isVerifiedPurchase) { <span class="text-success fs-8 ms-2 text-nowrap"><i class="bi bi-patch-check-fill"></i> Verified buyer</span> }</span>
+                  <span class="text-muted fs-8 text-nowrap">{{ r.createdAt | date: 'd MMM yyyy' }}</span>
+                </div>
+                <div class="mt-1"><wc-stars [value]="r.rating" /></div>
+                @if (r.title) { <div class="fw-bold mt-1" style="overflow-wrap: anywhere">{{ r.title }}</div> }
+                @if (r.comment) { <p class="mb-0 fs-7" style="white-space: pre-line; overflow-wrap: anywhere">{{ r.comment }}</p> }
               </div>
             } @empty { <div class="empty-state py-4"><i class="bi bi-chat-square-heart"></i>No reviews yet — be the first after your delivery.</div> }
           </div>

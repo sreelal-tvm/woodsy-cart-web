@@ -21,7 +21,7 @@ npm start          # http://localhost:4200 (API expected at http://localhost:510
 
 ## Configuration
 
-Set `apiUrl` in `src/environments/environment.development.ts` (dev) and `src/environments/environment.ts` (production).
+The API address is read at startup from `public/config.json` (`{ "apiUrl": "http://localhost:5100" }` locally). On the server, edit `config.json` in the deployed folder; no rebuild is needed (API repo: `docs/deployment/hosting-guide.md`, section 8.1).
 
 Online payments appear automatically once Razorpay keys are configured in the API.
 

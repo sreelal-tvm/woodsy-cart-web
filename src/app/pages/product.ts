@@ -1,18 +1,23 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer, Meta, SafeResourceUrl, Title } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SeoService } from '../core/seo.service';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
-import { Paged, PincodeCheck, ProductCard, ProductDetail, ProductImage, ProductOption, Review, Variant } from '../core/models';
+import { Address, MyReviewStatus, Paged, PincodeCheck, ProductCard, ProductDetail, ProductImage, ProductOption, Review, Variant } from '../core/models';
 import { AuthService, CartService, SiteService, WishlistService } from '../core/store';
 import { ToastService } from '../core/toast.service';
 import { SHARED } from '../shared/shared';
 import { timeLeft } from './offers';
+import { InstagramComponent } from '../shared/instagram';
+
+/** The saved address chosen on product pages during this visit. */
+const ADDRESS_KEY = 'wc_deliver_to';
 
 @Component({
   selector: 'wc-product',
-  imports: [FormsModule, RouterLink, DatePipe, ...SHARED],
+  imports: [InstagramComponent, FormsModule, RouterLink, DatePipe, ...SHARED],
   templateUrl: './product.html',
   styles: [`
     .offer-strip { display: flex; align-items: center; gap: .75rem; padding: .7rem 1rem; border-radius: .75rem; color: #fff; text-decoration: none;
@@ -42,8 +47,7 @@ export class ProductPage {
   private api = inject(ApiService);
   private router = inject(Router);
   private toast = inject(ToastService);
-  private title = inject(Title);
-  private meta = inject(Meta);
+  private seo = inject(SeoService);
   private sanitizer = inject(DomSanitizer);
   private embeds = new Map<string, SafeResourceUrl | null>();
   protected cart = inject(CartService);
@@ -62,9 +66,13 @@ export class ProductPage {
   protected reviews = signal<Paged<Review> | null>(null);
   protected pin = signal<PincodeCheck | null>(null);
   protected tab = signal<'details' | 'reviews'>('details');
+  protected addresses = signal<Address[]>([]);
+  protected addressId = signal<number | null>(null);
   pincode = localStorage.getItem('wc_pincode') ?? '';
   reviewForm = { rating: 5, title: '', comment: '' };
   protected reviewSent = signal(false);
+  /** Signed-in customer: may they review this product (delivered order), and have they already? */
+  protected myReview = signal<MyReviewStatus | null>(null);
 
   /** The variant matching all selected option values (or picked directly when a product has no options). */
   protected variant = computed<Variant | null>(() => {
@@ -103,9 +111,42 @@ export class ProductPage {
 
   constructor() {
     const clock = setInterval(() => this.now.set(Date.now()), 30_000); // offer countdown
-    inject(DestroyRef).onDestroy(() => clearInterval(clock));
+    // Phones: lift the floating WhatsApp / Instagram buttons above the sticky "Buy now" bar
+    document.body.classList.add('has-sticky-buy');
+    inject(DestroyRef).onDestroy(() => { clearInterval(clock); document.body.classList.remove('has-sticky-buy'); });
     effect(() => this.load(this.slug()));
-    if (this.pincode.length === 6) this.checkPincode();
+    // Signed in with saved addresses: deliver to the chosen (default) address. Otherwise use the last pincode entered.
+    effect(() => {
+      if (this.auth.isLoggedIn()) this.loadAddresses();
+      else { this.addresses.set([]); this.addressId.set(null); if (this.pincode.length === 6) this.checkPincode(); }
+    });
+  }
+
+  private loadAddresses() {
+    this.api.get<Address[]>('account/addresses').subscribe(list => {
+      this.addresses.set(list);
+      if (!list.length) { if (this.pincode.length === 6) this.checkPincode(); return; }
+      // The address picked earlier in this visit, else the default one, else the first.
+      const remembered = Number(sessionStorage.getItem(ADDRESS_KEY));
+      const pick = list.find(a => a.id === remembered) ?? list.find(a => a.isDefault) ?? list[0];
+      this.useAddress(pick.id, false);
+    });
+  }
+
+  /** Choose a saved address (0 = type another pincode). */
+  useAddress(id: number, remember = true) {
+    this.addressId.set(id);
+    if (remember) sessionStorage.setItem(ADDRESS_KEY, String(id));
+    const a = this.addresses().find(x => x.id === id);
+    if (!a) { this.pin.set(null); return; } // "Another pincode…": keep what's in the box for the customer to change
+    this.pincode = a.pincode;
+    this.checkPincode(a);
+  }
+
+  /** Typing a different pincode switches the dropdown to "Another pincode…". */
+  onPincodeTyped() {
+    const a = this.addresses().find(x => x.id === this.addressId());
+    if (a && a.pincode !== this.pincode) this.addressId.set(0);
   }
 
   private load(slug: string) {
@@ -116,8 +157,8 @@ export class ProductPage {
     this.api.get<ProductDetail>(`catalog/products/${slug}`).subscribe({
       next: p => {
         this.p.set(p);
-        this.title.setTitle(`${p.metaTitle || p.name} · WoodsyCart`);
-        this.meta.updateTag({ name: 'description', content: p.metaDescription || this.highlights().slice(0, 3).join(' ') || p.name });
+        this.seo.product(p, p.metaDescription || this.highlights().slice(0, 3).join(' ') ||
+          `${p.name} — ${p.category.name.toLowerCase()} at factory price with free delivery and assembly in Bengaluru.`);
         const first = p.variants.find(v => v.isAvailable) ?? p.variants[0];
         if (first) {
           this.selectedVariantId.set(first.id);
@@ -133,6 +174,9 @@ export class ProductPage {
         }
         this.api.get<ProductCard[]>(`catalog/products/${p.id}/related`).subscribe(r => this.related.set(r));
         this.api.get<Paged<Review>>(`catalog/products/${p.id}/reviews`).subscribe(r => this.reviews.set(r));
+        this.reviewSent.set(false);
+        this.myReview.set(null);
+        if (this.auth.isLoggedIn()) this.api.get<MyReviewStatus>(`catalog/products/${p.id}/my-review`).subscribe(m => this.myReview.set(m));
       },
       error: () => this.notFound.set(true)
     });
@@ -166,10 +210,11 @@ export class ProductPage {
     this.imageIndex.set((this.imageIndex() + n + len) % len);
   }
 
-  checkPincode() {
+  checkPincode(address?: Address) {
     if (!/^\d{6}$/.test(this.pincode)) { this.toast.error('Enter a valid 6-digit pincode'); return; }
     localStorage.setItem('wc_pincode', this.pincode);
-    this.api.get<PincodeCheck>(`site/pincode/${this.pincode}`).subscribe(r => this.pin.set(r));
+    const at = address?.latitude && address.longitude ? { lat: address.latitude, lng: address.longitude } : {};
+    this.api.get<PincodeCheck>(`site/pincode/${this.pincode}`, at).subscribe(r => this.pin.set(r));
   }
 
   deliveryBy() {
@@ -198,11 +243,12 @@ export class ProductPage {
     return this.site.whatsAppLink(`Hi WoodsyCart! I have a question about "${p.name}" ${location.href}`);
   }
 
-  submitReview() {
+  /** Saved against the delivered order, so the customer can edit it later from the order page. */
+  submitReview(orderNumber: string) {
     const p = this.p()!;
-    this.api.post<{ message: string }>(`catalog/products/${p.id}/reviews`, this.reviewForm).subscribe(r => {
+    this.api.post(`orders/${orderNumber}/reviews`, { productId: p.id, ...this.reviewForm }).subscribe(() => {
       this.reviewSent.set(true);
-      this.toast.success(r.message);
+      this.toast.success('Thank you! Your review will appear once we have checked it.');
     });
   }
 }
