@@ -48,7 +48,7 @@ const BENGALURU = { lat: 12.9716, lng: 77.5946 };
       <div class="lp-search" #search></div>
       <div class="lp-map-wrap">
         <div class="lp-map" #map></div>
-        <svg class="lp-pin" width="34" height="46" viewBox="0 0 34 46"><path d="M17 0C7.6 0 0 7.6 0 17c0 12.8 17 29 17 29s17-16.2 17-29C34 7.6 26.4 0 17 0z" fill="#3874ff"/><circle cx="17" cy="17" r="6.5" fill="#fff"/></svg>
+        <svg class="lp-pin" width="34" height="46" viewBox="0 0 34 46"><path d="M17 0C7.6 0 0 7.6 0 17c0 12.8 17 29 17 29s17-16.2 17-29C34 7.6 26.4 0 17 0z" fill="#9A5226"/><circle cx="17" cy="17" r="6.5" fill="#fff"/></svg>
         <button type="button" class="btn btn-light btn-sm shadow-sm lp-locate" (click)="locateMe()" [disabled]="locating()">
           <i class="bi bi-crosshair me-1"></i>{{ locating() ? 'Finding you…' : 'Use my current location' }}</button>
       </div>

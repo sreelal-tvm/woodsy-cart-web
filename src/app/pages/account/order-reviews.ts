@@ -20,7 +20,7 @@ const WORDS = ['', 'Poor', 'Not great', 'Good', 'Very good', 'Excellent'];
     .rv-item + .rv-item { border-top: 1px solid var(--bs-border-color); padding-top: 1rem; margin-top: 1rem; }
     .rv-stars { display: inline-flex; gap: .15rem; }
     .rv-stars button { background: none; border: 0; padding: .1rem .15rem; font-size: 1.65rem; line-height: 1; color: #f5a524; }
-    .rv-stars button:focus-visible { outline: 2px solid #3874ff; border-radius: .35rem; }
+    .rv-stars button:focus-visible { outline: 2px solid #9A5226; border-radius: .35rem; }
     .rv-word { font-weight: 700; font-size: .85rem; min-width: 5.5rem; }
     .rv-mine .bi { color: #f5a524; }
     .rv-card { border-color: color-mix(in srgb, #f5a524 45%, var(--bs-border-color)); }

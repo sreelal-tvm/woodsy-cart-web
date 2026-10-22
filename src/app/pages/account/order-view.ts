@@ -11,7 +11,7 @@ const FLOW: OrderStatus[] = ['Pending', 'Confirmed', 'PlacedWithVendor', 'Dispat
   selector: 'wc-order-view',
   styles: [`
     .delivery-box { display: flex; gap: .85rem; align-items: flex-start; padding: .9rem 1rem; border-radius: .75rem; background: var(--wc-soft); border: 1px solid var(--bs-border-color); }
-    .delivery-box .bi { color: #3874ff; }
+    .delivery-box .bi { color: #9A5226; }
     .delivery-box.delayed { background: #fff4e5; border-color: #ffd8a8; color: #7a3e00; }
     .delivery-box.delayed .bi { color: #e8590c; }
     :host-context([data-bs-theme=dark]) .delivery-box.delayed { background: #3a2a14; border-color: #7a4a10; color: #ffd8a8; }

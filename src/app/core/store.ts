@@ -175,7 +175,7 @@ export class ThemeService {
     effect(() => {
       const dark = this.dark();
       document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0f111a' : '#3874ff');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#1C1613' : '#9A5226');
       localStorage.setItem('wc_theme', dark ? 'dark' : 'light');
     });
   }

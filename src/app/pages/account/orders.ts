@@ -31,7 +31,7 @@ import { SHARED } from '../../shared/shared';
     } @else { <div class="skeleton" style="height: 200px"></div> }
   `,
   styles: [`.order-row { display: flex; gap: 1rem; align-items: center; border: 1px solid var(--bs-border-color); border-radius: 0.75rem; padding: 0.9rem; margin-bottom: 0.75rem; color: inherit; }
-    .order-row:hover { border-color: #3874ff; } .order-row img { width: 64px; height: 64px; object-fit: cover; border-radius: 0.5rem; background: var(--wc-soft); }`]
+    .order-row:hover { border-color: #9A5226; } .order-row img { width: 64px; height: 64px; object-fit: cover; border-radius: 0.5rem; background: var(--wc-soft); }`]
 })
 export class OrdersPage {
   protected orders = signal<OrderSummary[] | null>(null);

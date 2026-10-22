@@ -27,17 +27,17 @@ const ADDRESS_KEY = 'wc_deliver_to';
     .main-img img, .main-img video { width: 100%; height: 100%; object-fit: contain; background: #fff; }
     .thumbs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
     .thumbs button { flex: 0 0 72px; height: 72px; border-radius: 0.5rem; overflow: hidden; border: 2px solid transparent; padding: 0; background: var(--wc-soft); position: relative; }
-    .thumbs button.on { border-color: #3874ff; }
+    .thumbs button.on { border-color: #9A5226; }
     .thumbs img { width: 100%; height: 100%; object-fit: cover; }
     .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.12); }
     .price-big { font-size: 2rem; font-weight: 800; color: var(--bs-emphasis-color); }
     .opt { border: 1px solid var(--wc-border-strong); background: var(--wc-surface); border-radius: 0.5rem; padding: 0.4rem 0.9rem; font-weight: 700; font-size: 0.85rem; color: var(--bs-body-color); }
-    .opt.on { border-color: #3874ff; background: var(--wc-soft-primary); color: #3874ff; }
+    .opt.on { border-color: #9A5226; background: var(--wc-soft-primary); color: #9A5226; }
     .opt.na { opacity: 0.4; text-decoration: line-through; }
     .color-opt { width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 2px solid var(--wc-surface); box-shadow: 0 0 0 1px var(--wc-border-strong); }
-    .color-opt.on { box-shadow: 0 0 0 2px #3874ff; }
+    .color-opt.on { box-shadow: 0 0 0 2px #9A5226; }
     .qty { display: inline-flex; align-items: center; border: 1px solid var(--wc-border-strong); border-radius: 0.5rem; button { border: 0; background: transparent; width: 2.4rem; height: 2.6rem; } span { min-width: 2rem; text-align: center; font-weight: 800; } }
-    .perk { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.85rem; .bi { color: #3874ff; font-size: 1.15rem; } }
+    .perk { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.85rem; .bi { color: #9A5226; font-size: 1.15rem; } }
     .spec th { width: 34%; color: var(--wc-muted); font-weight: 700; }
     .sticky-buy { position: fixed; left: 0; right: 0; bottom: 3.6rem; background: var(--wc-surface); border-top: 1px solid var(--bs-border-color); padding: 0.6rem 1rem; z-index: 1030; }
     .desc-html :is(p, li) { margin-bottom: 0.4rem; }

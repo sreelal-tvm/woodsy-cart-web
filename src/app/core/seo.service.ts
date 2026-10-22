@@ -63,7 +63,7 @@ export class SeoService {
     const title = seo.title ? `${seo.title} · ${SITE}` : DEFAULT_TITLE;
     const description = clip(seo.description || DEFAULT_DESCRIPTION, 160);
     const canonical = this.canonical(url);
-    const image = seo.image ?? new URL('icons/icon-512x512.png', this.doc.baseURI).href;
+    const image = seo.image ?? new URL('og-image.png', this.doc.baseURI).href;
     const noindex = seo.noindex || PRIVATE.some(p => path.startsWith(p)) || (path === '/shop' && new URL(url, this.origin).searchParams.has('q'));
 
     this.title.setTitle(title);
@@ -77,7 +77,7 @@ export class SeoService {
       { property: 'og:url', content: canonical },
       { property: 'og:image', content: image },
       { property: 'og:locale', content: 'en_IN' },
-      { name: 'twitter:card', content: seo.image ? 'summary_large_image' : 'summary' },
+      { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: seo.title ?? DEFAULT_TITLE },
       { name: 'twitter:description', content: description },
       { name: 'twitter:image', content: image }

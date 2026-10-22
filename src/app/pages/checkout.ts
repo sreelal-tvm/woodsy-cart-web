@@ -174,10 +174,10 @@ function validMobile(phone?: string | null): boolean {
     </div>
   `,
   styles: [`
-    .step { display: inline-flex; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #3874ff; color: #fff; font-size: 0.8rem; align-items: center; justify-content: center; margin-right: 0.6rem; }
+    .step { display: inline-flex; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #9A5226; color: #fff; font-size: 0.8rem; align-items: center; justify-content: center; margin-right: 0.6rem; }
     .addr, .pay { display: flex; align-items: flex-start; border: 1px solid var(--bs-border-color); border-radius: 0.5rem; padding: 0.9rem; cursor: pointer; height: 100%; }
     .pay { align-items: center; margin-bottom: 0.6rem; }
-    .addr.on, .pay.on { border-color: #3874ff; background: var(--wc-soft-primary); }
+    .addr.on, .pay.on { border-color: #9A5226; background: var(--wc-soft-primary); }
     .pay.disabled { opacity: 0.55; cursor: not-allowed; }
   `]
 })
@@ -339,7 +339,7 @@ export class CheckoutPage {
       name: this.site.settings()?.businessName ?? 'WoodsyCart', description: `Order ${res.orderNumber}`,
       image: location.origin + '/icons/icon-192x192.png',
       prefill: { name: res.customerName, email: res.customerEmail, contact: res.customerPhone },
-      theme: { color: '#3874ff' },
+      theme: { color: '#9A5226' },
       ...(res.gatewayMethod ? { prefill: { name: res.customerName, email: res.customerEmail, contact: res.customerPhone, method: res.gatewayMethod } } : {}),
       handler: (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
         this.api.post<OrderDetail>('checkout/verify-payment', {

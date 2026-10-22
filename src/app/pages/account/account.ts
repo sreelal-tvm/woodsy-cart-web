@@ -25,8 +25,8 @@ import { AuthService } from '../../core/store';
       </div>
     </div>
   `,
-  styles: [`.big-avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #3874ff; color: #fff; font-weight: 800; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
-    .list-group-item { font-weight: 700; } .list-group-item.active { background: var(--wc-soft-primary); color: #3874ff; border-color: var(--bs-border-color); }`]
+  styles: [`.big-avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #9A5226; color: #fff; font-weight: 800; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
+    .list-group-item { font-weight: 700; } .list-group-item.active { background: var(--wc-soft-primary); color: #9A5226; border-color: var(--bs-border-color); }`]
 })
 export class AccountPage {
   protected auth = inject(AuthService);

@@ -1,25 +1,25 @@
 /* WoodsyCart storefront — Phoenix e-commerce look on Bootstrap 5 */
 @import 'bootstrap/scss/functions';
 
-$primary: #3874ff;
-$secondary: #31374a;
+$primary: #9A5226;
+$secondary: #3D322B;
 $success: #25b003;
 $info: #0097eb;
 $warning: #e5780b;
 $danger: #ed2000;
-$light: #eff2f6;
-$dark: #141824;
+$light: #F3EEE7;
+$dark: #2A211C;
 
 $font-family-sans-serif: 'Nunito Sans', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 $font-size-base: 0.9375rem;
-$body-color: #31374a;
+$body-color: #3D322B;
 $body-bg: #ffffff;
-$border-color: #e3e6ed;
-$headings-color: #141824;
+$border-color: #E7DED2;
+$headings-color: #2A211C;
 $headings-font-weight: 800;
 $border-radius: 0.375rem;
 $border-radius-lg: 0.5rem;
-$input-border-color: #cbd0dd;
+$input-border-color: #E2D8CB;
 $input-btn-padding-y: 0.55rem;
 $input-btn-padding-x: 1.1rem;
 $link-decoration: none;
@@ -28,35 +28,35 @@ $enable-shadows: false;
 @import 'bootstrap/scss/bootstrap';
 
 :root {
-  --wc-muted: #6e7891;
-  --wc-quiet: #9fa6bc;
-  --wc-soft: #f5f7fa;
-  --wc-soft-primary: #e5edff;
+  --wc-muted: #6B5A4E;
+  --wc-quiet: #A39283;
+  --wc-soft: #F7F4EF;
+  --wc-soft-primary: #F5E6DA;
   --wc-header-h: 4.25rem;
   --wc-surface: #ffffff;
-  --wc-border-strong: #cbd0dd;
-  --wc-header-top: #f5f7fa;
+  --wc-border-strong: #E2D8CB;
+  --wc-header-top: #F7F4EF;
 }
 
 [data-bs-theme='dark'] {
   color-scheme: dark;
-  --bs-body-bg: #0f111a;
+  --bs-body-bg: #1C1613;
   --bs-body-bg-rgb: 15, 17, 26;
-  --bs-body-color: #cbd0dd;
-  --bs-emphasis-color: #eff2f6;
-  --bs-heading-color: #eff2f6;
-  --bs-border-color: #31374a;
-  --bs-secondary-bg: #141824;
-  --bs-tertiary-bg: #1b1f2c;
-  --wc-surface: #141824;
-  --wc-soft: #1b1f2c;
-  --wc-soft-primary: #1b2a4e;
-  --wc-muted: #8a94ad;
-  --wc-quiet: #6e7891;
-  --wc-border-strong: #373e53;
-  --wc-header-top: #0f111a;
+  --bs-body-color: #E2D8CB;
+  --bs-emphasis-color: #F3EEE7;
+  --bs-heading-color: #F3EEE7;
+  --bs-border-color: #3D322B;
+  --bs-secondary-bg: #2A211C;
+  --bs-tertiary-bg: #352B25;
+  --wc-surface: #2A211C;
+  --wc-soft: #352B25;
+  --wc-soft-primary: #4A2E1C;
+  --wc-muted: #A8978A;
+  --wc-quiet: #6B5A4E;
+  --wc-border-strong: #4A3E35;
+  --wc-header-top: #1C1613;
   .card, .dropdown-menu, .list-group-item, .modal-content { background-color: var(--wc-surface); }
-  .form-control, .form-select { background-color: #0f111a; border-color: #373e53; color: #eff2f6; }
+  .form-control, .form-select { background-color: #1C1613; border-color: #4A3E35; color: #F3EEE7; }
   .table { --bs-table-bg: transparent; --bs-table-color: var(--bs-body-color); }
   .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 }
@@ -126,7 +126,7 @@ wc-scroller { display: block; }
   border: 1px solid var(--bs-border-color); background: var(--wc-surface); color: var(--bs-emphasis-color);
   display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 4px 14px rgba(36, 40, 46, 0.14);
   transition: transform .15s, background-color .15s;
-  &:hover { background: #3874ff; color: #fff; border-color: #3874ff; }
+  &:hover { background: #9A5226; color: #fff; border-color: #9A5226; }
   &.left { left: .5rem; } &.right { right: .5rem; }
 }
 @media (max-width: 575.98px) { .scroll-arrow { width: 2.25rem; height: 2.25rem; font-size: .95rem; &.left { left: .25rem; } &.right { right: .25rem; } } }
@@ -135,7 +135,7 @@ wc-scroller { display: block; }
 @media (max-width: 575.98px) { .scroller { grid-auto-columns: 46%; gap: 0.75rem; } }
 
 .badge-soft { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 800; font-size: 0.6875rem; text-transform: uppercase; padding: 0.3em 0.6em; border-radius: 0.25rem; border: 1px solid transparent; }
-@each $name, $color in (primary: $primary, success: $success, info: $info, warning: $warning, danger: $danger, secondary: #6e7891) {
+@each $name, $color in (primary: $primary, success: $success, info: $info, warning: $warning, danger: $danger, secondary: #6B5A4E) {
   .badge-soft-#{$name} { color: shade-color($color, 15%); background-color: tint-color($color, 88%); border-color: tint-color($color, 60%); }
 }
 

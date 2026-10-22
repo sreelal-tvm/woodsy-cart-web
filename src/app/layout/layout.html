@@ -5,7 +5,7 @@
       <button class="icon-btn d-lg-none" (click)="drawerOpen.set(true)" aria-label="Open menu"><i class="bi bi-list"></i></button>
       <a routerLink="/" class="brand d-flex align-items-center gap-2">
         <img src="logo.svg" alt="" width="32" height="32" />
-        <span>woodsycart</span>
+        <span>Woodsy<span class="brand-cart">Cart</span></span>
       </a>
       <form class="search d-none d-md-block" (ngSubmit)="search()" role="search">
         <i class="bi bi-search"></i>
@@ -140,7 +140,7 @@
   <div class="container-xxl">
     <div class="row g-4">
       <div class="col-lg-4">
-        <a routerLink="/" class="brand d-flex align-items-center gap-2 mb-3"><img src="logo.svg" alt="" width="32" height="32" /><span>woodsycart</span></a>
+        <a routerLink="/" class="brand d-flex align-items-center gap-2 mb-3"><img src="logo.svg" alt="" width="32" height="32" /><span>Woodsy<span class="brand-cart">Cart</span></span></a>
         <p class="text-muted fs-7">{{ site.settings()?.tagline || 'Factory-direct furniture, delivered across Bengaluru.' }}</p>
         <div class="d-flex gap-2">
           @if (site.settings()?.instagramUrl) { <a class="social" [href]="site.settings()!.instagramUrl" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a> }

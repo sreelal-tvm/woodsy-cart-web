@@ -98,7 +98,7 @@ import { UpiPayComponent } from './upi-pay';
     </div>
   `,
   styles: [`.placed { background: rgba(37, 176, 3, 0.1); border-radius: 1rem; padding: 2rem; } .placed .bi { font-size: 3rem; color: #25b003; }
-    .guest-cta { border: 1px solid color-mix(in srgb, #3874ff 30%, transparent); background: var(--wc-soft-primary); border-radius: 0.75rem; padding: 1rem 1.25rem; }`]
+    .guest-cta { border: 1px solid color-mix(in srgb, #9A5226 30%, transparent); background: var(--wc-soft-primary); border-radius: 0.75rem; padding: 1rem 1.25rem; }`]
 })
 export class OrderPage {
   private api = inject(ApiService);
@@ -186,7 +186,7 @@ export class OrderPage {
       await loadRazorpay();
       new window.Razorpay!({
         key: res.razorpayKeyId, amount: res.amountInPaise, currency: 'INR', order_id: res.razorpayOrderId, name: 'WoodsyCart',
-        description: `Order ${res.orderNumber}`, prefill: { name: res.customerName, email: res.customerEmail, contact: res.customerPhone }, theme: { color: '#3874ff' },
+        description: `Order ${res.orderNumber}`, prefill: { name: res.customerName, email: res.customerEmail, contact: res.customerPhone }, theme: { color: '#9A5226' },
         handler: (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
           this.api.post<OrderDetail>('checkout/verify-payment', {
             orderNumber: res.orderNumber, razorpayOrderId: r.razorpay_order_id, razorpayPaymentId: r.razorpay_payment_id,

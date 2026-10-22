@@ -163,19 +163,19 @@ import { InstagramComponent } from '../shared/instagram';
     .collage .t0 { grid-row: span 2; }
     @media (max-width: 991.98px) { .collage { height: 300px; } }
     .banner { position: relative; border-radius: 1rem; min-height: 420px; background-size: cover; background-position: center; display: flex; align-items: flex-end; overflow: hidden; }
-    .banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20,24,36,0.7) 0%, rgba(20,24,36,0.1) 70%); }
+    .banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(42, 33, 28,0.7) 0%, rgba(42, 33, 28,0.1) 70%); }
     .banner-copy { position: relative; color: #fff; padding: 2.5rem; max-width: 620px; h1 { color: #fff; font-weight: 800; font-size: clamp(1.6rem, 4vw, 2.75rem); } }
     .dots { position: absolute; bottom: 1rem; right: 1.25rem; display: flex; gap: 0.4rem; button { width: 0.6rem; height: 0.6rem; border-radius: 1rem; border: 0; background: rgba(255,255,255,0.5); } button.on { background: var(--wc-surface); width: 1.4rem; } }
     .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1.25rem; }
     .cat { display: flex; flex-direction: column; align-items: center; text-align: center; color: var(--bs-emphasis-color); }
     .cat-img { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--wc-soft); border: 1px solid var(--bs-border-color); transition: transform .2s; }
     .cat-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cat:hover .cat-img { transform: translateY(-3px); border-color: #3874ff; }
+    .cat:hover .cat-img { transform: translateY(-3px); border-color: #9A5226; }
     .promise { background: var(--wc-soft); border-radius: 1rem; padding: 1.5rem 0.5rem; }
     .promise > div { display: flex; gap: 0.75rem; align-items: center; }
-    .promise .bi { font-size: 1.75rem; color: #3874ff; }
+    .promise .bi { font-size: 1.75rem; color: #9A5226; }
     .promise b { display: block; color: var(--bs-emphasis-color); } .promise span { font-size: 0.8rem; color: var(--wc-muted); }
-    .custom-cta { background: linear-gradient(120deg, #3874ff, #0a3ec2); color: #fff; border-radius: 1rem; padding: 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; h3 { color: #fff; } }
+    .custom-cta { background: linear-gradient(120deg, #9A5226, #6E3716); color: #fff; border-radius: 1rem; padding: 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; h3 { color: #fff; } }
   `]
 })
 export class HomePage {

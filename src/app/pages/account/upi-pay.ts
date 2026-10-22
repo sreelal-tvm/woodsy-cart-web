@@ -80,7 +80,7 @@ import { SHARED } from '../../shared/shared';
     </div>
   `,
   styles: [`
-    .pay-card { border: 2px solid #3874ff; border-radius: 1rem; padding: 1.5rem; background: var(--wc-surface); }
+    .pay-card { border: 2px solid #9A5226; border-radius: 1rem; padding: 1.5rem; background: var(--wc-surface); }
     .amount { font-size: 2.25rem; font-weight: 800; color: var(--bs-emphasis-color); line-height: 1.1; }
     .vpa { border: 1px dashed var(--wc-border-strong); border-radius: 0.5rem; padding: 0.6rem 0.8rem; }
     .qr { border-radius: 0.75rem; border: 1px solid var(--bs-border-color); background: #fff; padding: 0.5rem; max-width: 100%; height: auto; }
