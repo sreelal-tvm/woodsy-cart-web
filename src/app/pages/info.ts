@@ -69,7 +69,7 @@ interface Faq { q: string; a: string; }
             <ul>
               <li>Account details: name, email, mobile number.</li>
               <li>Order details: delivery addresses, items purchased, order history and, for business purchases, your GSTIN.</li>
-              <li>Payment information is processed securely by our payment partner (Razorpay). We do not store your card or bank details.</li>
+              <li>Payment information is processed securely by our payment partners (such as Razorpay, PhonePe, Cashfree, PayU or Paytm). We do not store your card or bank details.</li>
             </ul>
             <h2>How we use it</h2>
             <p>To process and deliver your orders, share order updates, provide customer support, issue invoices and meet legal obligations. We share your name, phone and delivery address with our manufacturing and delivery partners only to fulfil your order.</p>

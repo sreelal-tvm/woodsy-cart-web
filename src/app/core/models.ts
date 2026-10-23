@@ -76,6 +76,8 @@ export interface PlaceOrderResponse {
   orderNumber: string; total: number; paymentMethod: PaymentMethod; razorpayOrderId?: string; razorpayKeyId?: string; amountInPaise: number;
   customerName: string; customerEmail?: string; customerPhone: string; accessToken: string; isGuest: boolean;
   paymentProvider?: string; gatewayMethod?: string;
+  /** PhonePe / Cashfree / PayU / Paytm: how to open the gateway's payment page. */
+  launch?: import('./gateway').GatewayLaunch;
 }
 
 export interface OrderSummary { id: number; orderNumber: string; createdAt: string; status: OrderStatus; paymentStatus: string; paymentMethod: PaymentMethod; total: number; itemCount: number; firstItemImage?: string; firstItemName?: string;

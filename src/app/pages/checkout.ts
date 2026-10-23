@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
+import { launchGateway } from '../core/gateway';
 import { Address, CheckoutMethod, OrderDetail, PaymentMethod, PlaceOrderResponse, Quote } from '../core/models';
 import { AuthService, CartService, GuestOrders, SiteService } from '../core/store';
 import { ToastService } from '../core/toast.service';
@@ -314,7 +315,8 @@ export class CheckoutPage {
         const bought = this.quote()?.lines.map(l => l.productId) ?? [];
         this.cart.clear(bought);
         sessionStorage.removeItem('wc_coupon');
-        if (res.paymentProvider === 'Razorpay' && res.razorpayOrderId) this.pay(res);
+        if (res.launch) this.openGateway(res);
+        else if (res.paymentProvider === 'Razorpay' && res.razorpayOrderId) this.pay(res);
         else this.openOrder(res, true);
       },
       error: () => this.placing.set(false)
@@ -324,6 +326,16 @@ export class CheckoutPage {
   private openOrder(res: PlaceOrderResponse, placed: boolean) {
     // Direct UPI / bank transfer: the order page shows how to pay; "placed" shows the thank-you banner.
     this.router.navigate(['/order', res.orderNumber], { queryParams: { token: res.isGuest ? res.accessToken : null, placed: placed ? 1 : null } });
+  }
+
+  /** PhonePe / Cashfree / PayU / Paytm: leave for the gateway's page; the customer returns to the order page. */
+  private async openGateway(res: PlaceOrderResponse) {
+    try {
+      await launchGateway(res.launch!);
+    } catch (e) {
+      this.toast.error((e as Error).message);
+      this.openOrder(res, false);
+    }
   }
 
   private async pay(res: PlaceOrderResponse) {

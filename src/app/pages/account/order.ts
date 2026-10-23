@@ -9,6 +9,7 @@ import { ToastService } from '../../core/toast.service';
 import { SHARED } from '../../shared/shared';
 import { InstagramComponent } from '../../shared/instagram';
 import { loadRazorpay } from '../checkout';
+import { GATEWAYS, launchGateway } from '../../core/gateway';
 import { OrderReviewsComponent } from './order-reviews';
 import { OrderViewComponent } from './order-view';
 import { UpiPayComponent } from './upi-pay';
@@ -108,6 +109,10 @@ export class OrderPage {
   readonly orderNumber = input.required<string>();
   readonly placedParam = input<string>(undefined, { alias: 'placed' });
   readonly tokenParam = input<string>(undefined, { alias: 'token' });
+  /** Set when the customer comes back from PhonePe / Cashfree / PayU / Paytm: paid, failed or pending. */
+  readonly paymentParam = input<string>(undefined, { alias: 'payment' });
+  private gatewayChecked = false;
+  private gatewayPoll?: ReturnType<typeof setInterval>;
   protected o = signal<OrderDetail | null>(null);
   protected placed = signal(false);
   protected justPaid = signal(false);
@@ -130,7 +135,7 @@ export class OrderPage {
       if (t) GuestOrders.save(this.orderNumber(), t);
       this.load();
     });
-    inject(DestroyRef).onDestroy(() => clearInterval(this.poll));
+    inject(DestroyRef).onDestroy(() => { clearInterval(this.poll); clearInterval(this.gatewayPoll); });
   }
 
   /** While a direct UPI / bank payment is pending, check every 5 s so the page flips to "paid" by itself. */
@@ -159,14 +164,41 @@ export class OrderPage {
   load() {
     this.notFound.set(false);
     this.api.get<OrderDetail>(`orders/${this.orderNumber()}`, this.q()).subscribe({
-      next: o => { this.o.set(o); this.watch(o); },
+      next: o => { this.o.set(o); this.watch(o); this.afterGateway(o); },
       error: () => this.notFound.set(true)
     });
   }
 
   needsPayment(o: OrderDetail) {
-    const gateway = o.paymentProvider === 'Razorpay' || (!o.paymentProvider && o.paymentMethod === 'Razorpay');
+    const gateway = GATEWAYS.includes(o.paymentProvider ?? '') || (!o.paymentProvider && o.paymentMethod === 'Razorpay');
     return gateway && o.paymentStatus === 'Pending' && o.status === 'Pending';
+  }
+
+  /** PhonePe / Cashfree / PayU / Paytm: confirm a pending payment with the gateway once the customer is back. */
+  private afterGateway(o: OrderDetail) {
+    const back = this.paymentParam();
+    if (o.paymentStatus === 'Paid') {
+      if (back === 'paid' || this.gatewayChecked) this.justPaid.set(true);
+      return;
+    }
+    if (this.gatewayChecked || !this.needsPayment(o) || o.paymentProvider === 'Razorpay') return;
+    this.gatewayChecked = true;
+    this.checkGateway(() => {
+      if (back === 'failed') this.toast.error('Your payment didn\'t go through. If money was debited, your bank returns it automatically. You can try again.');
+      else if (back) {
+        this.toast.info('We\'re confirming your payment with the bank. This page updates by itself.');
+        let tries = 0;
+        this.gatewayPoll = setInterval(() => (++tries > 15 ? clearInterval(this.gatewayPoll) : this.checkGateway()), 8000);
+      }
+    });
+  }
+
+  private checkGateway(stillPending?: () => void) {
+    this.api.post<OrderDetail>(`orders/${this.orderNumber()}/check-payment`, {}, this.q()).subscribe(n => {
+      this.o.set(n);
+      if (n.paymentStatus === 'Paid') { this.justPaid.set(true); clearInterval(this.gatewayPoll); }
+      else stillPending?.();
+    });
   }
 
   cancel() {
@@ -183,6 +215,10 @@ export class OrderPage {
 
   retryPayment() {
     this.api.post<PlaceOrderResponse>(`orders/${this.orderNumber()}/pay`, {}, this.q()).subscribe(async res => {
+      if (res.launch) {
+        try { await launchGateway(res.launch); } catch (e) { this.toast.error((e as Error).message); }
+        return;
+      }
       await loadRazorpay();
       new window.Razorpay!({
         key: res.razorpayKeyId, amount: res.amountInPaise, currency: 'INR', order_id: res.razorpayOrderId, name: 'WoodsyCart',
