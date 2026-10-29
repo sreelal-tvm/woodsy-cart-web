@@ -1,10 +1,20 @@
-import { Component, DestroyRef, ElementRef, Pipe, PipeTransform, afterNextRender, inject, input, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, Directive, ElementRef, Pipe, PipeTransform, afterNextRender, inject, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { ProductCard } from '../core/models';
 import { WishlistService } from '../core/store';
 
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+
+/** "Sreelal M" → "SM", "Sreelal" → "S": first letters of the first and last names (avatars). */
+@Pipe({ name: 'initials' })
+export class InitialsPipe implements PipeTransform {
+  transform(name?: string | null) {
+    const words = (name ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return '?';
+    return (words[0][0] + (words.length > 1 ? words[words.length - 1][0] : '')).toUpperCase();
+  }
+}
 
 @Pipe({ name: 'inr' })
 export class InrPipe implements PipeTransform {
@@ -171,4 +181,45 @@ export class ScrollerComponent {
   }
 }
 
-export const SHARED = [InrPipe, Inr2Pipe, MediaPipe, OrderStatusPipe, StarsComponent, ProductCardComponent, ScrollerComponent];
+/** Swipe left / right: a finger or pen (phones, touch-screen laptops) or a two-finger sideways swipe on a trackpad.
+ * Emits 1 for the next item (swiped left) and -1 for the previous one. Up / down still scrolls the page. */
+@Directive({
+  selector: '[wcSwipe]',
+  host: { '(pointerdown)': 'down($event)', '(pointerup)': 'up($event)', '(pointercancel)': 'cancel()', '(wheel)': 'wheel($event)', '[style.touch-action]': '"pan-y"' }
+})
+export class SwipeDirective {
+  readonly wcSwipe = output<number>();
+  private start: { x: number; y: number; at: number } | null = null;
+  private wheelX = 0;
+  private wheelUntil = 0;
+  private wheelAt = 0;
+
+  protected down(e: PointerEvent) { this.start = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY, at: Date.now() }; }
+  protected cancel() { this.start = null; }
+
+  protected up(e: PointerEvent) {
+    const s = this.start;
+    this.start = null;
+    if (!s) return;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    // A quick sideways move of at least 40px that is clearly more sideways than up / down
+    if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - s.at < 1000) this.wcSwipe.emit(dx < 0 ? 1 : -1);
+  }
+
+  protected wheel(e: WheelEvent) {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // up / down: the page scrolls as usual
+    e.preventDefault();                                       // no browser "back" gesture while swiping photos
+    const now = Date.now();
+    if (now < this.wheelUntil) return;                        // one photo per swipe
+    if (now - this.wheelAt > 300) this.wheelX = 0;            // a new gesture
+    this.wheelAt = now;
+    this.wheelX += e.deltaX;
+    if (Math.abs(this.wheelX) >= 60) {
+      this.wcSwipe.emit(this.wheelX > 0 ? 1 : -1);
+      this.wheelX = 0;
+      this.wheelUntil = now + 600;
+    }
+  }
+}
+
+export const SHARED = [InitialsPipe, InrPipe, Inr2Pipe, MediaPipe, OrderStatusPipe, StarsComponent, ProductCardComponent, ScrollerComponent, SwipeDirective];

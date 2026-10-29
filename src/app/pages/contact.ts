@@ -15,7 +15,7 @@ import { AuthService, SiteService } from '../core/store';
           @if (site.settings(); as s) {
             <div class="d-flex flex-column gap-3 mt-4">
               @if (site.whatsAppLink(); as wa) { <a class="contact-tile" [href]="wa" target="_blank" rel="noopener"><i class="bi bi-whatsapp text-success"></i><span><b>WhatsApp</b><br /><span class="text-muted fs-7">Fastest — chat with us</span></span></a> }
-              @if (s.phone) { <a class="contact-tile" [href]="'tel:' + s.phone"><i class="bi bi-telephone text-primary"></i><span><b>{{ s.phone }}</b><br /><span class="text-muted fs-7">Mon–Sat, 10am–7pm</span></span></a> }
+              @if (s.phone) { <a class="contact-tile" [href]="'tel:' + s.phone"><i class="bi bi-telephone text-primary"></i><span><b>{{ s.phone }}</b>@if (s.supportHours) {<br /><span class="text-muted fs-7">{{ s.supportHours }}</span>}</span></a> }
               <a class="contact-tile" [href]="'mailto:' + s.email"><i class="bi bi-envelope text-primary"></i><span><b>{{ s.email }}</b><br /><span class="text-muted fs-7">We reply within a day</span></span></a>
               <div class="contact-tile"><i class="bi bi-geo-alt text-primary"></i><span><b>Serving all of Bengaluru</b><br /><span class="text-muted fs-7">{{ s.address }}</span></span></div>
             </div>

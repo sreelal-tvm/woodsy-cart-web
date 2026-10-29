@@ -6,13 +6,15 @@ import { registerLocaleData } from '@angular/common';
 import localeEnIn from '@angular/common/locales/en-IN';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/store';
+import { provideScrollRestore } from './core/scroll-restore';
 
 registerLocaleData(localeEnIn);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })),
+    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'disabled', anchorScrolling: 'enabled' })),
+    provideScrollRestore(),
     provideHttpClient(withInterceptors([authInterceptor])),
     { provide: LOCALE_ID, useValue: 'en-IN' },
     provideServiceWorker('ngsw-worker.js', {

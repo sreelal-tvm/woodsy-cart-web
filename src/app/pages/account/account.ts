@@ -2,13 +2,14 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/store';
 
+import { InitialsPipe } from '../../shared/shared';
 @Component({
   selector: 'wc-account',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, InitialsPipe],
   template: `
     <div class="container-xxl py-4">
       <div class="d-flex align-items-center gap-3 mb-4">
-        <span class="big-avatar">{{ auth.user()?.fullName?.charAt(0) }}</span>
+        <span class="big-avatar">{{ auth.user()?.fullName | initials }}</span>
         <div><h1 class="h3 fw-800 mb-0">{{ auth.user()?.fullName }}</h1><span class="text-muted fs-7">{{ auth.user()?.email }}</span></div>
       </div>
       <div class="row g-4">
@@ -25,7 +26,7 @@ import { AuthService } from '../../core/store';
       </div>
     </div>
   `,
-  styles: [`.big-avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #9A5226; color: #fff; font-weight: 800; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
+  styles: [`.big-avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #9A5226; color: #fff; font-weight: 800; font-size: 1.35rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     .list-group-item { font-weight: 700; } .list-group-item.active { background: var(--wc-soft-primary); color: #9A5226; border-color: var(--bs-border-color); }`]
 })
 export class AccountPage {

@@ -6,7 +6,7 @@ import { filter } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { Category, Offer, OrderSummary } from '../core/models';
 import { AuthService, CartService, SiteService, ThemeService, WishlistService } from '../core/store';
-import { MediaPipe, OrderStatusPipe } from '../shared/shared';
+import { InitialsPipe, MediaPipe, OrderStatusPipe } from '../shared/shared';
 import { InstagramComponent } from '../shared/instagram';
 
 type Menu = '' | 'category' | 'notifications' | 'user';
@@ -14,7 +14,7 @@ interface NavLink { label: string; link: string; exact?: boolean; query?: Record
 
 @Component({
   selector: 'wc-layout',
-  imports: [InstagramComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, MediaPipe, OrderStatusPipe],
+  imports: [InstagramComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, InitialsPipe, MediaPipe, OrderStatusPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })
@@ -69,12 +69,17 @@ export class LayoutComponent {
       if (this.auth.isLoggedIn()) this.api.get<OrderSummary[]>('orders').subscribe(o => this.orders.set(o));
       else this.orders.set([]);
     });
+    // The page behind the open menu doesn't scroll (also when the menu's own scroll reaches its end)
+    effect(() => document.documentElement.classList.toggle('wc-no-scroll', this.drawerOpen()));
   }
 
   /** Delivery date changed in the last 7 days. */
   recentlyRescheduled(o: OrderSummary) {
     return !!o.deliveryDateChangedAt && Date.now() - new Date(o.deliveryDateChangedAt).getTime() < 7 * 86_400_000;
   }
+
+  /** A link in the menu closes it, also the page already open (e.g. Shop while on the shop page). */
+  closeOnLink(e: Event) { if ((e.target as HTMLElement).closest('a')) this.drawerOpen.set(false); }
 
   toggle(m: Menu) { this.menu.set(this.menu() === m ? '' : m); }
 

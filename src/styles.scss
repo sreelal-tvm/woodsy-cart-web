@@ -165,4 +165,8 @@ wc-scroller { display: block; }
 @media (max-width: 991.98px) {
   .wa-float { bottom: 4.6rem; }
   body.has-sticky-buy .wa-float { bottom: 8.25rem; } /* product page: above its sticky "Buy now" bar */
+  body.floats-left .wa-float { right: auto; left: 1rem; } /* cart: clear of the prices, quantity and delete on the right */
 }
+
+/* Open mobile menu: the page behind it stays still */
+html.wc-no-scroll, html.wc-no-scroll body { overflow: hidden; overscroll-behavior: none; }

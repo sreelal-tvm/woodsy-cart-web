@@ -48,7 +48,7 @@
         </div>
         <div class="position-relative">
           <button class="icon-btn" (click)="toggle('user')" aria-label="Account">
-            @if (auth.user(); as u) { <span class="avatar">{{ u.fullName.charAt(0) }}</span> } @else { <i class="bi bi-person"></i> }
+            @if (auth.user(); as u) { <span class="avatar">{{ u.fullName | initials }}</span> } @else { <i class="bi bi-person"></i> }
           </button>
           @if (menu() === 'user') {
             <div class="pop pop-right" style="width: 240px">
@@ -114,7 +114,7 @@
 
 @if (drawerOpen()) {
   <div class="drawer-backdrop" (click)="drawerOpen.set(false)"></div>
-  <aside class="drawer" aria-label="Menu">
+  <aside class="drawer" aria-label="Menu" (click)="closeOnLink($event)">
     <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
       <span class="fw-800 fs-5">Menu</span>
       <button class="btn-close" (click)="drawerOpen.set(false)" aria-label="Close"></button>

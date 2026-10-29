@@ -52,7 +52,7 @@ import { InstagramComponent } from '../shared/instagram';
                   <a class="btn btn-primary btn-lg" routerLink="/shop">Shop all furniture</a>
                   <a class="btn btn-phoenix-secondary btn-lg" routerLink="/shop" [queryParams]="{ sort: 'discount' }">Today's deals</a>
                 </div>
-                <div class="d-flex flex-wrap gap-4 mt-4 fs-7 text-muted">
+                <div class="trust-row d-flex flex-wrap gap-4 mt-4 fs-7 text-muted">
                   <span><i class="bi bi-truck text-primary me-1"></i>Free delivery</span>
                   <span><i class="bi bi-tools text-primary me-1"></i>Free assembly</span>
                   <span><i class="bi bi-shield-check text-primary me-1"></i>Manufacturer warranty</span>
@@ -175,7 +175,13 @@ import { InstagramComponent } from '../shared/instagram';
     .promise > div { display: flex; gap: 0.75rem; align-items: center; }
     .promise .bi { font-size: 1.75rem; color: #9A5226; }
     .promise b { display: block; color: var(--bs-emphasis-color); } .promise span { font-size: 0.8rem; color: var(--wc-muted); }
-    .custom-cta { background: linear-gradient(120deg, #9A5226, #6E3716); color: #fff; border-radius: 1rem; padding: 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; h3 { color: #fff; } }
+    .custom-cta { background: linear-gradient(120deg, #9A5226, #6E3716); color: #fff; border-radius: 1rem; padding: 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; h3 { color: #fff; } .btn { white-space: nowrap; } }
+    .trust-row > span { white-space: nowrap; }
+    /* Narrow phones (e.g. Galaxy S22 Ultra, 384px): the three badges and the two buttons stay on one line */
+    @media (max-width: 419.98px) {
+      .trust-row { column-gap: 0.75rem !important; font-size: 0.75rem !important; }
+      .custom-cta { padding: 1.5rem; .btn { padding-left: 0.75rem; padding-right: 0.75rem; } }
+    }
   `]
 })
 export class HomePage {

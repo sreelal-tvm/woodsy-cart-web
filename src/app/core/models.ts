@@ -41,7 +41,7 @@ export interface MyReviewStatus { canReview: boolean; orderNumber?: string; revi
 export interface Review { id: number; userName: string; rating: number; title?: string; comment?: string; isVerifiedPurchase: boolean; createdAt: string; }
 
 export interface SiteSettings {
-  businessName: string; tagline?: string; phone: string; whatsApp?: string; email: string; address: string; shippingFee: number; freeShippingThreshold: number;
+  businessName: string; tagline?: string; phone: string; whatsApp?: string; supportHours?: string; email: string; address: string; shippingFee: number; freeShippingThreshold: number;
   codEnabled: boolean; codFee: number; codMaxOrderAmount: number; onlinePaymentEnabled: boolean; razorpayKeyId?: string;
   instagramUrl?: string; facebookUrl?: string; youtubeUrl?: string; defaultDeliveryDays: number;
   /** Google Maps browser key — only present when maps are switched on in Admin. */

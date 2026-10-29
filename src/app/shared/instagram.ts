@@ -25,6 +25,7 @@ import { SiteService } from '../core/store';
     @media (max-width: 991.98px) {
       .ig-float { bottom: calc(4.6rem + 2.85rem + .65rem); }
       :host-context(body.has-sticky-buy) .ig-float { bottom: calc(8.25rem + 2.85rem + .65rem); }
+      :host-context(body.floats-left) .ig-float { right: auto; left: 1rem; }
     }
     .ig-banner { border-radius: 1rem; padding: 1.8rem 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
     .ig-banner .big { font-size: 2.6rem; line-height: 1; }

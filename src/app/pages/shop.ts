@@ -1,6 +1,8 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { filter } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { ApiService } from '../core/api.service';
 import { Facets, Paged, ProductCard } from '../core/models';
@@ -10,6 +12,7 @@ const PAGE_SIZE = 24;
 
 @Component({
   selector: 'wc-shop',
+  host: { '(window:popstate)': 'onPopState()' },
   imports: [FormsModule, RouterLink, ...SHARED],
   template: `
     <div class="container-xxl py-4">
@@ -21,7 +24,7 @@ const PAGE_SIZE = 24;
           <span class="text-muted fs-7">{{ result().total }} products</span>
         </div>
         <div class="d-flex gap-2 align-items-center">
-          <button class="btn btn-phoenix-secondary btn-sm d-lg-none" (click)="filtersOpen.set(true)"><i class="bi bi-funnel me-1"></i>Filters @if (activeFilterCount()) { ({{ activeFilterCount() }}) }</button>
+          <button class="btn btn-phoenix-secondary btn-sm d-lg-none" (click)="openFilters()"><i class="bi bi-funnel me-1"></i>Filters @if (activeFilterCount()) { ({{ activeFilterCount() }}) }</button>
           <select class="form-select form-select-sm w-auto" [ngModel]="sort() || 'popular'" (ngModelChange)="go({ sort: $event === 'popular' ? null : $event })" aria-label="Sort">
             <option value="popular">Most popular</option><option value="newest">Newest</option><option value="price_asc">Price: low to high</option>
             <option value="price_desc">Price: high to low</option><option value="discount">Biggest discount</option><option value="rating">Top rated</option>
@@ -32,7 +35,7 @@ const PAGE_SIZE = 24;
       <div class="row g-4">
         <aside class="col-lg-3 filters" [class.open]="filtersOpen()">
           <div class="d-flex justify-content-between align-items-center d-lg-none mb-3">
-            <h5 class="mb-0">Filters</h5><button class="btn-close" (click)="filtersOpen.set(false)" aria-label="Close filters"></button>
+            <h5 class="mb-0">Filters</h5><button class="btn-close" (click)="closeFilters()" aria-label="Close filters"></button>
           </div>
           @if (activeFilterCount()) { <button class="btn btn-sm btn-link px-0 mb-2" (click)="clearAll()">Clear all filters</button> }
           @if (facets(); as f) {
@@ -82,7 +85,7 @@ const PAGE_SIZE = 24;
               <div class="form-check"><input class="form-check-input" type="checkbox" id="fea" [checked]="featured() === 'true'" (change)="go({ featured: featured() === 'true' ? null : true })" /><label class="form-check-label" for="fea">Best sellers</label></div>
             </div>
           }
-          <button class="btn btn-primary w-100 d-lg-none mt-2" (click)="filtersOpen.set(false)">Show {{ result().total }} products</button>
+          <button class="btn btn-primary w-100 d-lg-none mt-2" (click)="closeFilters()">Show {{ result().total }} products</button>
         </aside>
 
         <div class="col-lg-9">
@@ -109,7 +112,7 @@ const PAGE_SIZE = 24;
         </div>
       </div>
     </div>
-    @if (filtersOpen()) { <div class="filters-backdrop d-lg-none" (click)="filtersOpen.set(false)"></div> }
+    @if (filtersOpen()) { <div class="filters-backdrop d-lg-none" (click)="closeFilters()"></div> }
   `,
   styles: [`
     .filter-block { border-bottom: 1px solid var(--bs-border-color); padding: 1rem 0; h6 { font-weight: 800; margin-bottom: 0.6rem; } }
@@ -146,6 +149,11 @@ export class ShopPage {
   protected facets = signal<Facets | null>(null);
   protected loading = signal(true);
   protected filtersOpen = signal(false);
+  /** Phones: the open filter panel has one history entry of its own, so Back closes it (keeping the filters chosen in it)
+   * instead of undoing the filters one by one. Filters changed while it is open replace that entry. */
+  private panelEntry = false;
+  private shownUrl = '';
+  private keepUrl: string | null = null;
   minInput: number | null = null;
   maxInput: number | null = null;
 
@@ -187,10 +195,34 @@ export class ShopPage {
         .subscribe(f => this.facets.set(f));
     });
     effect(() => this.title.setTitle(`${this.heading()} · WoodsyCart`));
+    this.shownUrl = this.router.url;
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => this.shownUrl = this.router.url);
+  }
+
+  openFilters() {
+    this.filtersOpen.set(true);
+    if (!this.panelEntry) { history.pushState(history.state, ''); this.panelEntry = true; }
+  }
+
+  /** ✕, "Show … products", the backdrop: the same as Back. */
+  closeFilters() {
+    if (this.panelEntry) history.back();
+    else this.filtersOpen.set(false);
+  }
+
+  /** Back while the panel is open lands on the entry from before it opened: close the panel and keep the filters. */
+  protected onPopState() {
+    if (!this.panelEntry) return;
+    this.panelEntry = false;
+    this.filtersOpen.set(false);
+    const keep = this.keepUrl ?? this.shownUrl;
+    this.keepUrl = null;
+    // After the router's own Back navigation (it starts on the next tick), so this one wins
+    if (keep && keep !== location.pathname + location.search) setTimeout(() => this.router.navigateByUrl(keep, { replaceUrl: true }));
   }
 
   go(params: Record<string, unknown>, resetPage = true) {
-    this.router.navigate(['/shop'], { queryParams: { ...params, ...(resetPage ? { page: null } : {}) }, queryParamsHandling: 'merge' });
+    this.router.navigate(['/shop'], { queryParams: { ...params, ...(resetPage ? { page: null } : {}) }, queryParamsHandling: 'merge', replaceUrl: this.panelEntry });
     if (!resetPage) window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -207,7 +239,8 @@ export class ShopPage {
   }
 
   clearAll() {
-    this.router.navigate(['/shop'], { queryParams: this.q() ? { q: this.q() } : {} });
-    this.filtersOpen.set(false);
+    const tree = this.router.createUrlTree(['/shop'], { queryParams: this.q() ? { q: this.q() } : {} });
+    if (this.panelEntry) { this.keepUrl = this.router.serializeUrl(tree); this.closeFilters(); }
+    else this.router.navigateByUrl(tree);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
@@ -17,7 +17,33 @@ import { SHARED } from '../shared/shared';
       } @else if (quote(); as q) {
         <div class="row g-4">
           <div class="col-lg-8">
-            <div class="table-responsive">
+            <!-- Phones: one compact card per item, everything visible without scrolling sideways -->
+            <div class="d-md-none border-top mb-3">
+              @for (l of q.lines; track l.productId + '-' + l.variantId) {
+                <div class="cart-item" [class.opacity-75]="!l.isAvailable">
+                  <a [routerLink]="['/product', l.slug]"><img [src]="l.imageUrl | media" alt="" class="rounded border" /></a>
+                  <div class="min-w-0 flex-grow-1">
+                    <div class="d-flex gap-2 align-items-start">
+                      <a class="fw-bold name flex-grow-1" [routerLink]="['/product', l.slug]">{{ l.name }}</a>
+                      <button class="btn btn-sm text-danger p-0 lh-1" (click)="remove(l)" aria-label="Remove"><i class="bi bi-trash fs-6"></i></button>
+                    </div>
+                    @if (l.variantName) { <div class="text-muted fs-8">{{ l.variantName }}</div> }
+                    @if (l.offerName) { <div class="fs-8 fw-bold text-offer"><i class="bi bi-stars me-1"></i>{{ l.offerName }} price</div> }
+                    @if (l.problem) { <div class="text-danger fs-8 fw-bold">{{ l.problem }}</div> }
+                    <div class="fs-7 mt-1">{{ l.unitPrice | inr }}@if (l.unitMrp > l.unitPrice) { <span class="text-quiet fs-8 text-decoration-line-through ms-1">{{ l.unitMrp | inr }}</span> }</div>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                      <div class="d-inline-flex align-items-center border rounded">
+                        <button class="btn btn-sm" (click)="setQty(l, l.quantity - 1)" [disabled]="l.quantity <= 1" aria-label="Decrease"><i class="bi bi-dash"></i></button>
+                        <span class="px-2 fw-bold">{{ l.quantity }}</span>
+                        <button class="btn btn-sm" (click)="setQty(l, l.quantity + 1)" aria-label="Increase"><i class="bi bi-plus"></i></button>
+                      </div>
+                      <span class="fw-bold">{{ l.lineTotal | inr }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="table-responsive d-none d-md-block">
               <table class="table align-middle">
                 <thead class="fs-8 text-uppercase"><tr><th>Product</th><th class="text-end">Price</th><th class="text-center">Qty</th><th class="text-end">Total</th><th></th></tr></thead>
                 <tbody>
@@ -79,7 +105,12 @@ import { SHARED } from '../shared/shared';
         <div class="skeleton" style="height: 320px"></div>
       }
     </div>
-  `
+  `,
+  styles: [`
+    .cart-item { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--bs-border-color); }
+    .cart-item img { width: 72px; height: 72px; object-fit: cover; }
+    .cart-item .name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+  `]
 })
 export class CartPage {
   private api = inject(ApiService);
@@ -90,6 +121,9 @@ export class CartPage {
   couponInput = sessionStorage.getItem('wc_coupon') ?? '';
 
   constructor() {
+    // Phones: the floating WhatsApp / Instagram buttons go to the left, clear of the prices and buttons on the right
+    document.body.classList.add('floats-left');
+    inject(DestroyRef).onDestroy(() => document.body.classList.remove('floats-left'));
     effect(() => {
       const lines = this.cart.lines();
       if (lines.length) this.refresh(lines);

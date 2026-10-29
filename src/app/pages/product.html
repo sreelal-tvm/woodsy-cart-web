@@ -9,7 +9,7 @@
       <div class="col-lg-6">
         <div class="position-sticky" style="top: 7rem">
           @if (images()[imageIndex()]; as img) {
-            <div class="main-img mb-2">
+            <div class="main-img mb-2" (wcSwipe)="step($event)">
               @if (img.mediaType === 3 && youTubeEmbed(img.url); as embed) {
                 <iframe [src]="embed" class="w-100 h-100 border-0" title="Product video" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               } @else if (img.mediaType === 3) { <video [src]="img.url | media" controls playsinline [poster]="img.thumbnailUrl | media"></video> }
