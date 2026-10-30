@@ -43,9 +43,11 @@ export interface Review { id: number; userName: string; rating: number; title?: 
 export interface SiteSettings {
   businessName: string; tagline?: string; phone: string; whatsApp?: string; supportHours?: string; email: string; address: string; shippingFee: number; freeShippingThreshold: number;
   codEnabled: boolean; codFee: number; codMaxOrderAmount: number; onlinePaymentEnabled: boolean; razorpayKeyId?: string;
-  instagramUrl?: string; facebookUrl?: string; youtubeUrl?: string; defaultDeliveryDays: number;
+  instagramUrl?: string; facebookUrl?: string; threadsUrl?: string; youtubeUrl?: string; defaultDeliveryDays: number;
   /** Google Maps browser key — only present when maps are switched on in Admin. */
   mapsApiKey?: string | null;
+  /** Visitor statistics switched on in Admin → Visitors. */
+  visitStats?: boolean;
 }
 
 export interface PincodeCheck { pincode: string; serviceable: boolean; deliveryDays: number; extraCharge: number; codAvailable: boolean; area?: string; message: string; nearBengaluru?: boolean; }

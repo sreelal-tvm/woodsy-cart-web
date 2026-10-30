@@ -69,6 +69,7 @@ interface Faq { q: string; a: string; }
             <ul>
               <li>Account details: name, email, mobile number.</li>
               <li>Order details: delivery addresses, items purchased, order history and, for business purchases, your GSTIN.</li>
+              <li>Site usage: how long you use the site and how you found us (for example Instagram or Google), linked to a random ID kept in your browser and, once you sign in, to your account. We don't record your location or IP address for this, and delete it after 12 months.</li>
               <li>Payment information is processed securely by our payment partners (such as Razorpay, PhonePe, Cashfree, PayU or Paytm). We do not store your card or bank details.</li>
             </ul>
             <h2>How we use it</h2>
