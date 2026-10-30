@@ -108,7 +108,7 @@ import { InstagramComponent } from '../shared/instagram';
           <div class="col-6 col-md-3"><i class="bi bi-buildings"></i><div><b>Factory direct</b><span>No showroom markup</span></div></div>
           <div class="col-6 col-md-3"><i class="bi bi-truck"></i><div><b>Free delivery</b><span>Across Bengaluru</span></div></div>
           <div class="col-6 col-md-3"><i class="bi bi-tools"></i><div><b>Free assembly</b><span>By trained fitters</span></div></div>
-          <div class="col-6 col-md-3"><i class="bi bi-cash-coin"></i><div><b>Pay your way</b><span>UPI, cards or COD</span></div></div>
+          <div class="col-6 col-md-3"><i class="bi bi-cash-coin"></i><div><b>Pay your way</b><span>UPI, cards{{ site.settings()?.codEnabled ? ' or COD' : ' or net banking' }}</span></div></div>
         </div>
       </section>
 

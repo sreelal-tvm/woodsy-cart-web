@@ -8,13 +8,14 @@ import { Category, Offer, OrderSummary } from '../core/models';
 import { AuthService, CartService, SiteService, ThemeService, WishlistService } from '../core/store';
 import { InitialsPipe, MediaPipe, OrderStatusPipe } from '../shared/shared';
 import { InstagramComponent } from '../shared/instagram';
+import { InstallComponent, InstallService } from '../shared/install';
 
 type Menu = '' | 'category' | 'notifications' | 'user';
 interface NavLink { label: string; link: string; exact?: boolean; query?: Record<string, string>; highlight?: boolean; }
 
 @Component({
   selector: 'wc-layout',
-  imports: [InstagramComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, InitialsPipe, MediaPipe, OrderStatusPipe],
+  imports: [InstagramComponent, InstallComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, InitialsPipe, MediaPipe, OrderStatusPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })
@@ -26,6 +27,7 @@ export class LayoutComponent {
   protected wishlist = inject(WishlistService);
   protected site = inject(SiteService);
   protected theme = inject(ThemeService);
+  protected installer = inject(InstallService);
 
   protected categories = signal<Category[]>([]);
   protected drawerOpen = signal(false);

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SeoService } from './core/seo.service';
 import { ToastService } from './core/toast.service';
+import { InstallService } from './shared/install';
 
 @Component({
   selector: 'app-root',
@@ -18,4 +19,5 @@ import { ToastService } from './core/toast.service';
 export class App {
   protected toast = inject(ToastService);
   private seo = inject(SeoService); // search / share tags for every page
+  private install = inject(InstallService); // catches the browser's install offer as early as it comes
 }

@@ -30,7 +30,7 @@ interface Faq { q: string; a: string; }
           }
           @case ('faq') {
             <h1 class="fw-800 mb-4">Frequently asked questions</h1>
-            @for (f of faqs; track f.q) {
+            @for (f of faqs(); track f.q) {
               <details class="border rounded-3 p-3 mb-2"><summary class="fw-bold cursor-pointer">{{ f.q }}</summary><p class="mt-2 mb-0">{{ f.a }}</p></details>
             }
           }
@@ -105,14 +105,16 @@ export class InfoPage {
   protected name = computed(() => this.site.settings()?.businessName ?? 'WoodsyCart');
   protected email = computed(() => this.site.settings()?.email || 'us');
 
-  protected faqs: Faq[] = [
+  protected faqs = computed<Faq[]>(() => [
     { q: 'Where do you deliver?', a: 'Across Bengaluru and nearby areas. Check your pincode on any product page to confirm.' },
     { q: 'How long does delivery take?', a: 'Most furniture is made to order and delivered in 7–10 working days. Each product page shows its estimate.' },
     { q: 'Is assembly included?', a: 'Yes — standard assembly is free within our service area. Our team assembles the furniture at your home.' },
-    { q: 'Can I pay cash on delivery?', a: 'Yes, for eligible orders and pincodes. Online payment by UPI, cards and net banking is also available.' },
+    { q: 'Can I pay cash on delivery?', a: this.site.settings()?.codEnabled
+      ? 'Yes, for eligible orders and pincodes. Online payment by UPI, cards and net banking is also available.'
+      : 'Not at the moment. Pay securely online by UPI, cards or net banking at checkout.' },
     { q: 'Can I get a custom size or colour?', a: 'Often, yes. Send us an enquiry or WhatsApp message with your requirement and we will share a quote.' },
     { q: 'What if my furniture arrives damaged?', a: 'Report it within 7 days of delivery with photos. We will repair, replace or refund it.' },
     { q: 'Do you provide a GST invoice?', a: 'Every order gets an invoice you can download from your order page. Add your GSTIN at checkout for business purchases.' },
     { q: 'How do I track my order?', a: 'Use the Track order page with your order number and phone number, or open the order from My orders.' }
-  ];
+  ]);
 }

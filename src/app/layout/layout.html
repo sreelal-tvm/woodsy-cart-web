@@ -128,6 +128,7 @@
       <hr />
       <a class="drawer-link" routerLink="/contact">Contact us</a>
       <a class="drawer-link" routerLink="/about">About WoodsyCart</a>
+      @if (installer.eligible()) { <a class="drawer-link" href="" (click)="$event.preventDefault(); drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</a> }
     </nav>
   </aside>
 }
@@ -178,7 +179,7 @@
     </div>
     <div class="d-flex flex-wrap justify-content-between gap-2 border-top mt-4 pt-3 text-muted fs-8">
       <span>© {{ year }} {{ site.settings()?.businessName || 'WoodsyCart' }}. All rights reserved.</span>
-      <span><i class="bi bi-shield-check me-1"></i>Secure payments · UPI · Cards · Net banking · Cash on delivery</span>
+      <span><i class="bi bi-shield-check me-1"></i>Secure payments · UPI · Cards · Net banking{{ site.settings()?.codEnabled ? ' · Cash on delivery' : '' }}</span>
     </div>
   </div>
 </footer>
@@ -192,6 +193,7 @@
 </nav>
 
 <wc-instagram variant="float" />
+<wc-install />
 @if (site.whatsAppLink(); as wa) {
   <a class="wa-float" [href]="wa" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"><i class="bi bi-whatsapp"></i></a>
 }

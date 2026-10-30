@@ -166,6 +166,7 @@ wc-scroller { display: block; }
   .wa-float { bottom: 4.6rem; }
   body.has-sticky-buy .wa-float { bottom: 8.25rem; } /* product page: above its sticky "Buy now" bar */
   body.floats-left .wa-float { right: auto; left: 1rem; } /* cart: clear of the prices, quantity and delete on the right */
+  body.has-install-card .wa-float, body.has-install-card .ig-float { display: none; } /* the "Get the app" card sits there */
 }
 
 /* Open mobile menu: the page behind it stays still */
