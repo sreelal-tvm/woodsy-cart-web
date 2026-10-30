@@ -19,6 +19,7 @@ import { InitialsPipe } from '../../shared/shared';
             <a class="list-group-item list-group-item-action" routerLink="/wishlist"><i class="bi bi-heart me-2"></i>Wishlist</a>
             <a class="list-group-item list-group-item-action" routerLink="addresses" routerLinkActive="active"><i class="bi bi-geo-alt me-2"></i>Addresses</a>
             <a class="list-group-item list-group-item-action" routerLink="profile" routerLinkActive="active"><i class="bi bi-person me-2"></i>Profile & password</a>
+            <a class="list-group-item list-group-item-action" routerLink="/notifications"><i class="bi bi-bell me-2"></i>Notifications</a>
             <button class="list-group-item list-group-item-action text-danger" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button>
           </nav>
         </div>

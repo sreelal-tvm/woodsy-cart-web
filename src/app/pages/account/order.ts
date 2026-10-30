@@ -13,10 +13,12 @@ import { GATEWAYS, launchGateway } from '../../core/gateway';
 import { OrderReviewsComponent } from './order-reviews';
 import { OrderViewComponent } from './order-view';
 import { UpiPayComponent } from './upi-pay';
+import { OrderUpdatesComponent } from '../../shared/order-updates';
+import { PushClient } from '../../shared/push';
 
 @Component({
   selector: 'wc-order',
-  imports: [InstagramComponent, FormsModule, RouterLink, DatePipe, OrderViewComponent, OrderReviewsComponent, UpiPayComponent, ...SHARED],
+  imports: [InstagramComponent, FormsModule, RouterLink, DatePipe, OrderViewComponent, OrderReviewsComponent, UpiPayComponent, OrderUpdatesComponent, ...SHARED],
   template: `
     <div class="container-xxl py-4">
       @if (o(); as o) {
@@ -34,6 +36,7 @@ import { UpiPayComponent } from './upi-pay';
           </div>
           <div class="mb-4"><wc-instagram variant="card" /></div>
         }
+        @if (!['Delivered', 'Cancelled', 'Returned'].includes(o.status)) { <wc-order-updates [orderNumber]="o.orderNumber" [token]="token()" /> }
         @if (!auth.isLoggedIn()) {
           <div class="guest-cta d-flex flex-wrap align-items-center gap-3 mb-4">
             <i class="bi bi-person-plus fs-3 text-primary"></i>
@@ -106,6 +109,8 @@ export class OrderPage {
   private toast = inject(ToastService);
   protected auth = inject(AuthService);
   protected site = inject(SiteService);
+  private push = inject(PushClient);
+  private pushLinked = false;
   readonly orderNumber = input.required<string>();
   readonly placedParam = input<string>(undefined, { alias: 'placed' });
   readonly tokenParam = input<string>(undefined, { alias: 'token' });
@@ -125,7 +130,7 @@ export class OrderPage {
   comment = '';
 
   /** Guest access: token from the link (email / checkout redirect) or remembered on this device. */
-  private token = computed(() => this.tokenParam() || GuestOrders.get(this.orderNumber()) || null);
+  protected token = computed(() => this.tokenParam() || GuestOrders.get(this.orderNumber()) || null);
   protected q = computed(() => ({ token: this.token() }));
 
   constructor() {
@@ -164,7 +169,11 @@ export class OrderPage {
   load() {
     this.notFound.set(false);
     this.api.get<OrderDetail>(`orders/${this.orderNumber()}`, this.q()).subscribe({
-      next: o => { this.o.set(o); this.watch(o); this.afterGateway(o); },
+      next: o => {
+        this.o.set(o); this.watch(o); this.afterGateway(o);
+        // this phone gets the order's updates: linked when notifications are on, offered right after placing it
+        if (!this.pushLinked) { this.pushLinked = true; this.push.afterOrder({ orderNumber: o.orderNumber, token: this.token() }, this.placed()); }
+      },
       error: () => this.notFound.set(true)
     });
   }

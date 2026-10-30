@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { SeoService } from './core/seo.service';
 import { ToastService } from './core/toast.service';
 import { InstallService } from './shared/install';
+import { PushClient } from './shared/push';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +21,5 @@ export class App {
   protected toast = inject(ToastService);
   private seo = inject(SeoService); // search / share tags for every page
   private install = inject(InstallService); // catches the browser's install offer as early as it comes
+  private push = inject(PushClient); // keeps this phone's notifications linked to the account and cart
 }

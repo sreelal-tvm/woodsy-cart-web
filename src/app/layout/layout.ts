@@ -9,13 +9,14 @@ import { AuthService, CartService, SiteService, ThemeService, WishlistService } 
 import { HeightVarDirective, InitialsPipe, MediaPipe, OrderStatusPipe } from '../shared/shared';
 import { InstagramComponent } from '../shared/instagram';
 import { InstallComponent, InstallService } from '../shared/install';
+import { NotifyPromptComponent } from '../shared/push';
 
 type Menu = '' | 'category' | 'notifications' | 'user';
 interface NavLink { label: string; link: string; exact?: boolean; query?: Record<string, string>; highlight?: boolean; }
 
 @Component({
   selector: 'wc-layout',
-  imports: [InstagramComponent, InstallComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, HeightVarDirective, InitialsPipe, MediaPipe, OrderStatusPipe],
+  imports: [InstagramComponent, InstallComponent, NotifyPromptComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, HeightVarDirective, InitialsPipe, MediaPipe, OrderStatusPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })

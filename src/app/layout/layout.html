@@ -58,6 +58,7 @@
                 <a class="pop-item" routerLink="/wishlist"><i class="bi bi-heart me-2"></i>Wishlist</a>
                 <a class="pop-item" routerLink="/account/addresses"><i class="bi bi-geo-alt me-2"></i>Addresses</a>
                 <a class="pop-item" routerLink="/account/profile"><i class="bi bi-person me-2"></i>Profile</a>
+                <a class="pop-item" routerLink="/notifications"><i class="bi bi-bell me-2"></i>Notifications</a>
                 <button class="pop-item text-danger" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button>
               } @else {
                 <div class="p-3">
@@ -164,6 +165,7 @@
         <a routerLink="/faq">FAQs</a>
         <a routerLink="/contact">Contact us</a>
         <a routerLink="/account/orders">My orders</a>
+        <a routerLink="/notifications">Notifications</a>
       </div>
       <div class="col-6 col-lg-2">
         <h6>Policies</h6>
@@ -198,6 +200,7 @@
 
 <wc-instagram variant="float" />
 <wc-install />
+<wc-notify-prompt />
 @if (site.whatsAppLink(); as wa) {
   <a class="wa-float" [href]="wa" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"><i class="bi bi-whatsapp"></i></a>
 }

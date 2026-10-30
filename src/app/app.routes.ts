@@ -30,6 +30,7 @@ export const routes: Routes = [
           { path: 'profile', loadComponent: () => import('./pages/account/profile').then(m => m.ProfilePage), title: 'Profile · WoodsyCart' }
         ]
       },
+      { path: 'notifications', loadComponent: () => import('./pages/notifications').then(m => m.NotificationsPage), title: 'Notifications · WoodsyCart' },
       { path: 'contact', loadComponent: () => import('./pages/contact').then(m => m.ContactPage), title: 'Contact us · WoodsyCart' },
       { path: 'about', loadComponent: () => import('./pages/info').then(m => m.InfoPage), data: { page: 'about' }, title: 'About · WoodsyCart' },
       { path: 'faq', loadComponent: () => import('./pages/info').then(m => m.InfoPage), data: { page: 'faq' }, title: 'FAQs · WoodsyCart' },

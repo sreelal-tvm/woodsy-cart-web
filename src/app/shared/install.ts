@@ -26,7 +26,8 @@ export class InstallService {
   /** Instagram, Facebook, Threads and other apps' own browsers can't install sites. */
   readonly inAppName = /Instagram/.test(this.ua) ? 'Instagram' : /FBAN|FBAV|FB_IAB/.test(this.ua) ? 'Facebook' : /Barcelona/.test(this.ua) ? 'Threads'
     : /; wv\)|Snapchat|Line\//.test(this.ua) ? 'this app' : '';
-  private standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
+  /** Opened from the home-screen app (not a browser tab). */
+  readonly standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
   /** Dev only: ?install=ios-safari etc. shows that browser's steps on a computer. */
   readonly debug = isDevMode() && new URLSearchParams(location.search).has('install');
   private debugKind = isDevMode() ? new URLSearchParams(location.search).get('install') as InstallKind | null : null;
