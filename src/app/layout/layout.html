@@ -131,7 +131,7 @@
     </nav>
     @if (installer.eligible()) {
       <div class="drawer-foot">
-        <a class="drawer-link" href="" (click)="$event.preventDefault(); drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</a>
+        <button class="btn btn-outline-primary w-100 fw-bold" (click)="drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</button>
       </div>
     }
   </aside>
@@ -188,7 +188,7 @@
   </div>
 </footer>
 
-<nav class="bottom-nav d-lg-none" aria-label="Quick links">
+<nav class="bottom-nav d-lg-none" aria-label="Quick links" wcHeightVar="--wc-nav-h">
   <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-house"></i>Home</a>
   <a routerLink="/shop" routerLinkActive="active"><i class="bi bi-grid"></i>Shop</a>
   <a routerLink="/wishlist" routerLinkActive="active"><i class="bi bi-heart"></i>Wishlist</a>

@@ -230,7 +230,7 @@
     }
   </div>
 
-  <div class="sticky-buy d-lg-none d-flex align-items-center gap-2">
+  <div class="sticky-buy d-lg-none d-flex align-items-center gap-2" wcHeightVar="--wc-buy-h">
     <div class="me-auto"><div class="fw-800">{{ price() | inr }}</div>@if (discount() >= 3) { <div class="fs-8 text-success fw-bold">{{ discount() }}% off</div> }</div>
     @if (available()) {
       <button class="btn btn-phoenix-secondary" (click)="addToCart()"><i class="bi bi-bag-plus"></i></button>

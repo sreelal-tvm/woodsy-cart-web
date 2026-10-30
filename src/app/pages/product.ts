@@ -39,7 +39,7 @@ const ADDRESS_KEY = 'wc_deliver_to';
     .qty { display: inline-flex; align-items: center; border: 1px solid var(--wc-border-strong); border-radius: 0.5rem; button { border: 0; background: transparent; width: 2.4rem; height: 2.6rem; } span { min-width: 2rem; text-align: center; font-weight: 800; } }
     .perk { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.85rem; .bi { color: #9A5226; font-size: 1.15rem; } }
     .spec th { width: 34%; color: var(--wc-muted); font-weight: 700; }
-    .sticky-buy { position: fixed; left: 0; right: 0; bottom: 3.6rem; background: var(--wc-surface); border-top: 1px solid var(--bs-border-color); padding: 0.6rem 1rem; z-index: 1030; }
+    .sticky-buy { position: fixed; left: 0; right: 0; bottom: var(--wc-nav-h, 3.6rem); /* right on top of the phone menu bar, whatever its height */ background: var(--wc-surface); border-top: 1px solid var(--bs-border-color); padding: 0.6rem 1rem; z-index: 1030; }
     .desc-html :is(p, li) { margin-bottom: 0.4rem; }
   `]
 })

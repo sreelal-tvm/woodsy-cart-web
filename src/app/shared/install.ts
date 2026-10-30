@@ -78,10 +78,10 @@ export class InstallService {
   encapsulation: ViewEncapsulation.None, // the steps' button pictures come in as HTML; every class starts with ins-
   styles: [`
     wc-install { display: contents; }
-    .ins-card { position: fixed; left: .75rem; right: .75rem; bottom: calc(4.6rem + env(safe-area-inset-bottom)); z-index: 1045; max-width: 26rem; margin: 0 auto;
+    .ins-card { position: fixed; left: .75rem; right: .75rem; bottom: calc(var(--wc-nav-h, 3.6rem) + 1rem); z-index: 1045; max-width: 26rem; margin: 0 auto;
       background: var(--wc-surface); border: 1px solid var(--wc-border-strong); border-radius: 1rem; padding: .85rem .9rem;
       box-shadow: 0 .75rem 2rem rgba(42, 33, 28, .22); display: flex; gap: .75rem; align-items: center; animation: ins-up .35s ease-out; }
-    body.has-sticky-buy .ins-card { bottom: calc(8.25rem + env(safe-area-inset-bottom)); } /* product page: above "Buy now" */
+    body.has-sticky-buy .ins-card { bottom: calc(var(--wc-nav-h, 3.6rem) + var(--wc-buy-h, 3.65rem) + .75rem); } /* product page: above "Buy now" */
     .ins-icon { width: 3rem; height: 3rem; border-radius: .8rem; flex: none; box-shadow: 0 2px 8px rgba(154, 82, 38, .3); }
     .ins-title { font-weight: 800; color: var(--bs-emphasis-color); line-height: 1.2; }
     .ins-sub { font-size: .78rem; color: var(--wc-muted); line-height: 1.3; margin-top: .15rem; }

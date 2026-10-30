@@ -6,7 +6,7 @@ import { filter } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { Category, Offer, OrderSummary } from '../core/models';
 import { AuthService, CartService, SiteService, ThemeService, WishlistService } from '../core/store';
-import { InitialsPipe, MediaPipe, OrderStatusPipe } from '../shared/shared';
+import { HeightVarDirective, InitialsPipe, MediaPipe, OrderStatusPipe } from '../shared/shared';
 import { InstagramComponent } from '../shared/instagram';
 import { InstallComponent, InstallService } from '../shared/install';
 
@@ -15,7 +15,7 @@ interface NavLink { label: string; link: string; exact?: boolean; query?: Record
 
 @Component({
   selector: 'wc-layout',
-  imports: [InstagramComponent, InstallComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, InitialsPipe, MediaPipe, OrderStatusPipe],
+  imports: [InstagramComponent, InstallComponent, RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe, HeightVarDirective, InitialsPipe, MediaPipe, OrderStatusPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })

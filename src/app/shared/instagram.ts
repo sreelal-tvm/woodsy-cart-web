@@ -23,8 +23,8 @@ import { SiteService } from '../core/store';
     .ig-float:hover { color: #fff; transform: scale(1.06); }
     @keyframes ig-pulse { 0%, 100% { box-shadow: 0 6px 16px rgba(238, 42, 123, .35); } 50% { box-shadow: 0 6px 22px 5px rgba(238, 42, 123, .4); } }
     @media (max-width: 991.98px) {
-      .ig-float { bottom: calc(4.6rem + 2.85rem + .65rem); }
-      :host-context(body.has-sticky-buy) .ig-float { bottom: calc(8.25rem + 2.85rem + .65rem); }
+      .ig-float { bottom: calc(var(--wc-nav-h, 3.6rem) + 1rem + 2.85rem + .65rem); }
+      :host-context(body.has-sticky-buy) .ig-float { bottom: calc(var(--wc-nav-h, 3.6rem) + var(--wc-buy-h, 3.65rem) + 1rem + 2.85rem + .65rem); }
       :host-context(body.floats-left) .ig-float { right: auto; left: 1rem; }
     }
     .ig-banner { border-radius: 1rem; padding: 1.8rem 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }

@@ -101,7 +101,7 @@
 /* "Menu" stays at the top and "Install the app" at the bottom; only the links in between scroll */
 .drawer { position: fixed; inset: 0; width: 100%; background: var(--wc-surface); z-index: 1060; display: flex; flex-direction: column; }
 .drawer-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.drawer-foot { padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--bs-border-color); }
+.drawer-foot { padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--bs-border-color); }
 .drawer-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--wc-quiet); padding: 1rem 0.75rem 0.4rem; }
 .drawer-link {
   display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.75rem; border-radius: 0.375rem;

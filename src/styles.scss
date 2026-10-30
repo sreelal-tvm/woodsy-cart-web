@@ -163,8 +163,9 @@ wc-scroller { display: block; }
   &:hover { color: #fff; transform: scale(1.05); }
 }
 @media (max-width: 991.98px) {
-  .wa-float { bottom: 4.6rem; }
-  body.has-sticky-buy .wa-float { bottom: 8.25rem; } /* product page: above its sticky "Buy now" bar */
+  /* Above the phone menu bar (and the product page's "Buy now" bar); heights measured by wcHeightVar */
+  .wa-float { bottom: calc(var(--wc-nav-h, 3.6rem) + 1rem); }
+  body.has-sticky-buy .wa-float { bottom: calc(var(--wc-nav-h, 3.6rem) + var(--wc-buy-h, 3.65rem) + 1rem); }
   body.floats-left .wa-float { right: auto; left: 1rem; } /* cart: clear of the prices, quantity and delete on the right */
   body.has-install-card .wa-float, body.has-install-card .ig-float { display: none; } /* the "Get the app" card sits there */
 }

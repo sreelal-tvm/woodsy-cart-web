@@ -6,6 +6,22 @@ import { WishlistService } from '../core/store';
 
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 
+/**
+ * Keeps a page-wide CSS variable at this element's height, e.g. wcHeightVar="--wc-nav-h" on the phone menu bar, so things
+ * fixed above it sit exactly on top whatever the phone's text size. The variable goes away with the element.
+ */
+@Directive({ selector: '[wcHeightVar]' })
+export class HeightVarDirective {
+  readonly wcHeightVar = input.required<string>();
+  constructor() {
+    const el = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
+    const root = document.documentElement.style;
+    const observer = new ResizeObserver(() => root.setProperty(this.wcHeightVar(), el.getBoundingClientRect().height + 'px'));
+    observer.observe(el);
+    inject(DestroyRef).onDestroy(() => { observer.disconnect(); root.removeProperty(this.wcHeightVar()); });
+  }
+}
+
 /** "Sreelal M" → "SM", "Sreelal" → "S": first letters of the first and last names (avatars). */
 @Pipe({ name: 'initials' })
 export class InitialsPipe implements PipeTransform {
@@ -222,4 +238,4 @@ export class SwipeDirective {
   }
 }
 
-export const SHARED = [InitialsPipe, InrPipe, Inr2Pipe, MediaPipe, OrderStatusPipe, StarsComponent, ProductCardComponent, ScrollerComponent, SwipeDirective];
+export const SHARED = [InitialsPipe, InrPipe, Inr2Pipe, MediaPipe, OrderStatusPipe, StarsComponent, ProductCardComponent, ScrollerComponent, SwipeDirective, HeightVarDirective];
