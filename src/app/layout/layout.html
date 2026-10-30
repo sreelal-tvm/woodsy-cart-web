@@ -119,7 +119,7 @@
       <span class="fw-800 fs-5">Menu</span>
       <button class="btn-close" (click)="drawerOpen.set(false)" aria-label="Close"></button>
     </div>
-    <nav class="p-2">
+    <nav class="p-2 drawer-scroll">
       @for (l of navLinks(); track l.label) { <a class="drawer-link" [class.nav-offer]="l.highlight" [routerLink]="l.link" [queryParams]="l.query ?? null">@if (l.highlight) {<i class="bi bi-stars me-1"></i>}{{ l.label }}</a> }
       <div class="drawer-title">Shop by category</div>
       @for (c of categories(); track c.id) {
@@ -128,8 +128,12 @@
       <hr />
       <a class="drawer-link" routerLink="/contact">Contact us</a>
       <a class="drawer-link" routerLink="/about">About WoodsyCart</a>
-      @if (installer.eligible()) { <a class="drawer-link" href="" (click)="$event.preventDefault(); drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</a> }
     </nav>
+    @if (installer.eligible()) {
+      <div class="drawer-foot">
+        <button class="btn btn-outline-primary w-100 fw-bold" (click)="drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</button>
+      </div>
+    }
   </aside>
 }
 
