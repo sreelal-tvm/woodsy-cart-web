@@ -149,7 +149,7 @@ function save(v: { id: number; at: number }) {
   try { localStorage.setItem(VISIT_KEY, JSON.stringify(v)); } catch { /* not remembered */ }
 }
 
-/** instagram, facebook, threads, google-ads, google, other or direct, from link tags, ad click IDs, the in-app browser and the referring site. */
+/** instagram, facebook, threads, youtube, google-ads, google, other or direct, from link tags, ad click IDs, the in-app browser and the referring site. */
 function landingSource(): string {
   const q = new URLSearchParams(location.search);
   const utm = (q.get('utm_source') ?? '').toLowerCase();
@@ -162,6 +162,7 @@ function landingSource(): string {
   if (utm) {
     if (utm.includes('insta') || utm === 'ig') return 'instagram';
     if (utm.includes('threads')) return 'threads';
+    if (utm.includes('youtube') || utm === 'yt') return 'youtube';
     if (utm.includes('facebook') || utm === 'fb' || utm === 'meta') return 'facebook';
     if (utm.includes('google')) return q.has('gclid') || ['cpc', 'ppc', 'paid', 'ads'].includes(medium) ? 'google-ads' : 'google';
     return 'other';
@@ -171,6 +172,7 @@ function landingSource(): string {
   if (/Barcelona|Threads/i.test(ua) || /(^|\.)threads\.(net|com)$/.test(ref)) return 'threads';
   if (/FBAN|FBAV|FB_IAB/.test(ua) || q.has('fbclid') || /(^|\.)facebook\.com$|(^|\.)fb\.com$/.test(ref)) return 'facebook';
   if (/(^|\.)instagram\.com$/.test(ref)) return 'instagram';
+  if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$/.test(ref)) return 'youtube';
   if (/(^|\.)google\./.test(ref)) return 'google';
   return ref ? 'other' : 'direct';
 }
