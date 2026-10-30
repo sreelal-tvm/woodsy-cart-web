@@ -131,7 +131,7 @@
     </nav>
     @if (installer.eligible()) {
       <div class="drawer-foot">
-        <button class="btn btn-outline-primary w-100 fw-bold" (click)="drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</button>
+        <a class="drawer-link" href="" (click)="$event.preventDefault(); drawerOpen.set(false); installer.install()"><i class="bi bi-phone me-1"></i>Install the app</a>
       </div>
     }
   </aside>
